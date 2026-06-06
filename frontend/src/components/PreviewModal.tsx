@@ -60,6 +60,8 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
               src={item.downloadUrl} 
               controls 
               autoPlay 
+              playsInline
+              muted
               className="max-w-full max-h-[65vh] rounded-2xl object-contain shadow-lg" 
             />
           ) : (

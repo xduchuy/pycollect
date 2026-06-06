@@ -85,13 +85,39 @@ app.get('/api/proxy', async (req, res) => {
       headers['Referer'] = 'https://www.instagram.com/';
     }
 
+    // Forward the Range header from the client request to the target server
+    if (req.headers.range) {
+      headers['Range'] = req.headers.range;
+    }
+
     const response = await fetch(targetUrl, { headers });
-    if (!response.ok) {
+    if (!response.ok && response.status !== 206) {
       return res.status(response.status).json({ error: `Proxy failed to load remote asset. Status: ${response.status}` });
     }
 
+    // Forward crucial headers back to the client for streaming support
     const contentType = response.headers.get('content-type') || 'application/octet-stream';
     res.setHeader('Content-Type', contentType);
+
+    const contentRange = response.headers.get('content-range');
+    if (contentRange) {
+      res.setHeader('Content-Range', contentRange);
+    }
+
+    const acceptRanges = response.headers.get('accept-ranges');
+    if (acceptRanges) {
+      res.setHeader('Accept-Ranges', acceptRanges);
+    } else {
+      res.setHeader('Accept-Ranges', 'bytes');
+    }
+
+    const contentLength = response.headers.get('content-length');
+    if (contentLength) {
+      res.setHeader('Content-Length', contentLength);
+    }
+
+    // Send the matching status (e.g. 206 Partial Content or 200 OK)
+    res.status(response.status);
 
     // Convert web response stream to Node stream and pipe it back to the user
     if (response.body) {

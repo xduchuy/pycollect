@@ -62,3 +62,82 @@ body {
 .shake-input {
   animation: shake 0.2s ease-in-out 0s 2;
 }
+
+/* Neumorphic Dark Toggle Styles */
+.toggle-track {
+  background: #212121;
+  box-shadow: 
+    inset 8px 8px 16px #1a1a1a, 
+    inset -8px -8px 16px #282828;
+  border-radius: 50px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-handle {
+  background: #2a2a2a;
+  box-shadow: 
+    6px 6px 12px #181818, 
+    -6px -6px 12px #3c3c3c;
+  border-radius: 35px;
+  transition: transform 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.handle-detail {
+  width: 4px;
+  height: 40%;
+  background: #222;
+  border-radius: 2px;
+  opacity: 0.8;
+  box-shadow: inset 1px 1px 1px rgba(0,0,0,0.5);
+}
+
+.indicator-light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #4ade80;
+  box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80;
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+#toggle-input:checked + .toggle-track .toggle-handle,
+.toggle-track.checked .toggle-handle {
+  transform: translateX(100px);
+}
+
+#toggle-input:checked + .toggle-track .indicator-light,
+.toggle-track.checked .indicator-light {
+  opacity: 1;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px #4ade80, 0 0 20px #4ade80;
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 4px #4ade80, 0 0 8px #4ade80;
+    opacity: 0.6;
+  }
+}
+
+.indicator-light.loading {
+  animation: pulse-glow 1.5s infinite ease-in-out;
+  opacity: 1 !important;
+}
+
+.toggle-track:active .toggle-handle {
+  box-shadow: 
+    2px 2px 4px #181818, 
+    -2px -2px 4px #3c3c3c;
+}
