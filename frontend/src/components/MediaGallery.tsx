@@ -19,8 +19,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'image' | 'video'>('all');
   const [sortBy, setSortBy] = useState<'default' | 'size-asc' | 'size-desc'>('default');
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const { platform, title, media, authorName, authorAvatar, likeCount, commentCount } = result;
+
+  React.useEffect(() => {
+    setAvatarFailed(false);
+  }, [authorAvatar]);
 
   // Helper: Format counts (e.g., 12450 -> 12.4K)
   const formatCount = (num?: number) => {
@@ -101,15 +106,12 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
       <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
         <div className="flex items-center space-x-3">
           {/* Creator Avatar */}
-          {authorAvatar ? (
+          {authorAvatar && !avatarFailed ? (
             <img
               src={authorAvatar}
               alt={authorName || 'Avatar'}
               className="w-10 h-10 rounded-full object-cover border border-white/10 shadow-sm"
-              onError={(e) => {
-                // Fail-safe default avatar
-                (e.target as HTMLElement).style.display = 'none';
-              }}
+              onError={() => setAvatarFailed(true)}
             />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center text-xs font-bold text-gray-300">

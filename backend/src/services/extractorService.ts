@@ -121,15 +121,18 @@ export class ExtractorService {
       return true;
     });
 
-    // Standardize platform label capitalization
     const platformLabel = platform.charAt(0).toUpperCase() + platform.slice(1);
+
+    const proxiedAvatarUrl = result.authorAvatar && result.authorAvatar.startsWith('http') && !result.authorAvatar.startsWith('/static')
+      ? `/api/proxy?url=${encodeURIComponent(result.authorAvatar)}`
+      : result.authorAvatar;
 
     return {
       platform: platformLabel,
       title: result.title || 'Parsed Post Details',
       media: deduplicatedMedia,
       authorName: result.authorName,
-      authorAvatar: result.authorAvatar,
+      authorAvatar: proxiedAvatarUrl,
       likeCount: result.likeCount,
       commentCount: result.commentCount
     };

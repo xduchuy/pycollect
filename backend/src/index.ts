@@ -26,6 +26,13 @@ app.use((req, _res, next) => {
 const staticPath = path.join(__dirname, '../static');
 app.use('/static', express.static(staticPath));
 
+// Helper to safely convert web stream to node readable stream
+const getReadableStream = (body: any): Readable => {
+  return (Readable as any).fromWeb 
+    ? (Readable as any).fromWeb(body)
+    : Readable.from(body);
+};
+
 // Endpoint: Analyze URL
 app.post('/api/analyze', async (req, res) => {
   try {
@@ -127,10 +134,7 @@ app.get('/api/proxy', async (req, res) => {
 
     // Convert web response stream to Node stream and pipe it back to the user
     if (response.body) {
-      // Use Readable.fromWeb in Node 18+ to avoid hanging issues with Web Streams
-      const nodeStream = (Readable as any).fromWeb 
-        ? (Readable as any).fromWeb(response.body)
-        : Readable.from(response.body as any);
+      const nodeStream = getReadableStream(response.body);
       nodeStream.pipe(res);
     } else {
       res.status(500).json({ error: 'Remote response body is empty' });
@@ -192,7 +196,7 @@ app.post('/api/download', async (req, res) => {
       res.setHeader('Content-Type', contentType);
 
       if (fileResponse.body) {
-        return Readable.from(fileResponse.body as any).pipe(res);
+        return getReadableStream(fileResponse.body).pipe(res);
       } else {
         return res.status(500).json({ error: 'File body stream is empty' });
       }
@@ -226,7 +230,7 @@ app.post('/api/download', async (req, res) => {
         try {
           const fileResponse = await fetch(actualUrl);
           if (fileResponse.ok && fileResponse.body) {
-            const fileStream = Readable.from(fileResponse.body as any);
+            const fileStream = getReadableStream(fileResponse.body);
             archive.append(fileStream, { name: item.filename });
           }
         } catch (err) {

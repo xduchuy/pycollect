@@ -64,6 +64,10 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
   const handleClipboardPaste = async () => {
     if (isLoading) return;
     try {
+      if (!navigator.clipboard || !navigator.clipboard.readText) {
+        alert('Clipboard access is only supported over secure connections (HTTPS) or localhost. Please paste your link manually.');
+        return;
+      }
       const text = await navigator.clipboard.readText();
       if (text) {
         setUrl(text);
@@ -71,6 +75,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
       }
     } catch (err) {
       console.warn('Clipboard read failed:', err);
+      alert('Unable to read clipboard. Please make sure paste permissions are granted or paste your link manually.');
     }
   };
 
