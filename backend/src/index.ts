@@ -116,9 +116,18 @@ app.post('/api/download', async (req, res) => {
       return res.status(400).json({ error: 'No media items specified for download' });
     }
 
+    // Normalize downloadUrl by stripping Vercel service route prefix if present
+    const normalizedItems = items.map((item: any) => {
+      let downloadUrl = item.downloadUrl || '';
+      if (downloadUrl.startsWith('/_/backend')) {
+        downloadUrl = downloadUrl.replace('/_/backend', '');
+      }
+      return { ...item, downloadUrl };
+    });
+
     // Case 1: Single file download
-    if (items.length === 1) {
-      const item = items[0];
+    if (normalizedItems.length === 1) {
+      const item = normalizedItems[0];
       
       // If it's a local static file
       if (item.downloadUrl.startsWith('/static')) {
@@ -165,7 +174,7 @@ app.post('/api/download', async (req, res) => {
 
     archive.pipe(res);
 
-    for (const item of items) {
+    for (const item of normalizedItems) {
       if (item.downloadUrl.startsWith('/static')) {
         const filePath = path.join(staticPath, item.filename);
         if (fs.existsSync(filePath)) {
