@@ -165,7 +165,7 @@ app.post('/api/download', async (req, res) => {
 
     // Case 2: ZIP Multi-file package zipping
     res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename="media_collector_package.zip"');
+    res.setHeader('Content-Disposition', 'attachment; filename="mcollect_package.zip"');
 
     const archive = archiver('zip', { zlib: { level: 9 } });
     archive.on('error', (err) => {
@@ -212,7 +212,7 @@ app.post('/api/download', async (req, res) => {
 // Start Server if not running as a Vercel serverless function
 if (!process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`Media Collector Express server running on port ${PORT}`);
+    console.log(`Mcollect Express server running on port ${PORT}`);
     console.log(`Serving static files from: ${staticPath}`);
   });
 }
