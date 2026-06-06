@@ -13,6 +13,7 @@ export const App: React.FC = () => {
   // Application view/data states
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [analyzedUrl, setAnalyzedUrl] = useState<string>('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export const App: React.FC = () => {
 
   // CORE ACTIONS
   const handleAnalyze = async (url: string) => {
+    setAnalyzedUrl(url);
     setIsLoading(true);
     setErrorMessage(null);
     setResult(null);
@@ -87,6 +89,17 @@ export const App: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Listen for shared URL search parameter on component mount
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedUrl = params.get('url');
+    if (sharedUrl) {
+      handleAnalyze(sharedUrl);
+      // Clean query parameter from browser location address to prevent re-analyzing on page refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
 
   const handleBack = () => {
     setResult(null);
@@ -283,6 +296,7 @@ export const App: React.FC = () => {
               {!isLoading && result && (
                 <MediaGallery
                   result={result}
+                  analyzedUrl={analyzedUrl}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelect}
                   onPreview={handlePreviewOpen}

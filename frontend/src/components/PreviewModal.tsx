@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { X, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import type { MediaItem } from '../types';
 
 interface PreviewModalProps {
@@ -22,6 +22,17 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   const [animate, setAnimate] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
+  // Custom Video Player States
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isMuted, setIsMuted] = useState(true);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [showSpeedMenu, setShowSpeedMenu] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const item = mediaList[currentIndex] || null;
+
   // Sync index state when modal opens or initialIndex changes
   useEffect(() => {
     if (isOpen) {
@@ -31,6 +42,16 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
       setAnimate(false);
     }
   }, [isOpen, initialIndex]);
+
+  // Reset player states when active item changes or modal closes
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsMuted(true);
+    setPlaybackRate(1);
+    setShowSpeedMenu(false);
+  }, [currentIndex, isOpen]);
 
   // Keyboard Navigation Support (ArrowLeft, ArrowRight, Escape)
   useEffect(() => {
@@ -50,10 +71,17 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, mediaList, onClose]);
 
-  if (!isOpen || mediaList.length === 0) return null;
+  // Dismiss speed menu on outside click
+  useEffect(() => {
+    if (!showSpeedMenu) return;
+    const handleOutsideClick = () => {
+      setShowSpeedMenu(false);
+    };
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
+  }, [showSpeedMenu]);
 
-  const item = mediaList[currentIndex];
-  if (!item) return null;
+  if (!isOpen || !item) return null;
 
   const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -63,6 +91,46 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
     setCurrentIndex((prev) => (prev === mediaList.length - 1 ? 0 : prev + 1));
+  };
+
+  const togglePlay = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play().catch(err => console.warn(err));
+    }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    const nextMute = !isMuted;
+    videoRef.current.muted = nextMute;
+    setIsMuted(nextMute);
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!videoRef.current) return;
+    const newTime = parseFloat(e.target.value);
+    videoRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const changeSpeed = (e: React.MouseEvent, rate: number) => {
+    e.stopPropagation();
+    if (!videoRef.current) return;
+    videoRef.current.playbackRate = rate;
+    setPlaybackRate(rate);
+    setShowSpeedMenu(false);
+  };
+
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return '0:00';
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   return (
@@ -110,14 +178,124 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
           {/* Media Player element */}
           <div key={item.id} className="w-full h-full flex items-center justify-center transition-all duration-300 select-none">
             {item.type === 'video' ? (
-              <video 
-                src={item.downloadUrl} 
-                controls 
-                autoPlay 
-                playsInline
-                muted
-                className="max-w-full max-h-[65vh] rounded-2xl object-contain shadow-lg" 
-              />
+              <div className="relative group/player max-w-full max-h-[65vh] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center bg-black">
+                <video 
+                  ref={videoRef}
+                  src={item.downloadUrl} 
+                  autoPlay 
+                  playsInline
+                  muted={isMuted}
+                  onPlay={() => setIsPlaying(true)}
+                  onPause={() => setIsPlaying(false)}
+                  onTimeUpdate={() => {
+                    if (videoRef.current) {
+                      setCurrentTime(videoRef.current.currentTime);
+                    }
+                  }}
+                  onLoadedMetadata={() => {
+                    if (videoRef.current) {
+                      setDuration(videoRef.current.duration);
+                    }
+                  }}
+                  onClick={() => togglePlay()}
+                  className="max-w-full max-h-[65vh] object-contain cursor-pointer" 
+                />
+
+                {/* Big Center Overlay Play/Pause Button */}
+                <div 
+                  onClick={() => togglePlay()}
+                  className={`absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer transition-all duration-300 ${
+                    isPlaying ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'
+                  }`}
+                >
+                  <div className="p-4 rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 hover:scale-105 transition-all shadow-xl">
+                    <Play className="w-8 h-8 fill-white ml-0.5" />
+                  </div>
+                </div>
+
+                {/* Custom Neumorphic Bottom Control Bar */}
+                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover/player:opacity-100 transition-opacity duration-300 z-20">
+                  {/* Progress scrub bar */}
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="range" 
+                      min={0} 
+                      max={duration || 100} 
+                      step={0.1}
+                      value={currentTime} 
+                      onChange={handleSeek} 
+                      className="w-full accent-[#00f2fe] h-1 rounded-lg bg-white/20 appearance-none cursor-pointer focus:outline-none transition-all" 
+                    />
+                  </div>
+
+                  {/* Controls Row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {/* Play/Pause control */}
+                      <button 
+                        type="button" 
+                        onClick={() => togglePlay()} 
+                        className="text-white hover:text-[#00f2fe] transition-colors p-1"
+                      >
+                        {isPlaying ? (
+                          <Pause className="w-4 h-4 fill-white" />
+                        ) : (
+                          <Play className="w-4 h-4 fill-white animate-pulse" />
+                        )}
+                      </button>
+
+                      {/* Sound Control */}
+                      <button 
+                        type="button" 
+                        onClick={toggleMute} 
+                        className="text-white hover:text-[#00f2fe] transition-colors p-1"
+                      >
+                        {isMuted ? (
+                          <VolumeX className="w-4 h-4" />
+                        ) : (
+                          <Volume2 className="w-4 h-4" />
+                        )}
+                      </button>
+
+                      {/* Time display */}
+                      <span className="text-[10px] text-gray-300 font-mono select-none">
+                        {formatTime(currentTime)} / {formatTime(duration)}
+                      </span>
+                    </div>
+
+                    {/* Speed selector popup */}
+                    <div className="relative">
+                      <button 
+                        type="button" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowSpeedMenu(!showSpeedMenu);
+                        }} 
+                        className="px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-md text-[9px] text-gray-300 font-bold uppercase tracking-wider transition-all"
+                      >
+                        {playbackRate}x
+                      </button>
+
+                      {showSpeedMenu && (
+                        <div className="absolute bottom-full right-0 mb-1 bg-zinc-950 border border-white/10 rounded-xl overflow-hidden py-1 w-16 shadow-2xl flex flex-col z-30">
+                          {([0.5, 1.0, 1.5, 2.0] as const).map((rate) => (
+                            <button
+                              key={rate}
+                              type="button"
+                              onClick={(e) => changeSpeed(e, rate)}
+                              className={`py-1 text-[9px] font-bold text-center hover:bg-white/5 transition-colors ${
+                                playbackRate === rate ? 'text-[#00f2fe]' : 'text-gray-400'
+                              }`}
+                            >
+                              {rate}x
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : (
               <img 
                 src={item.thumbnailUrl} 

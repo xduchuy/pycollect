@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, Play, Image, Heart, MessageCircle, ArrowUpDown } from 'lucide-react';
+import { ArrowLeft, Check, Play, Image, Heart, MessageCircle, ArrowUpDown, QrCode, X } from 'lucide-react';
 import type { AnalysisResult, MediaItem } from '../types';
 
 interface MediaGalleryProps {
   result: AnalysisResult;
+  analyzedUrl: string;
   selectedIds: Set<string>;
   onToggleSelect: (id: string) => void;
   onPreview: (item: MediaItem, index: number, currentList: MediaItem[]) => void;
@@ -12,6 +13,7 @@ interface MediaGalleryProps {
 
 export const MediaGallery: React.FC<MediaGalleryProps> = ({
   result,
+  analyzedUrl,
   selectedIds,
   onToggleSelect,
   onPreview,
@@ -20,6 +22,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
   const [filterType, setFilterType] = useState<'all' | 'image' | 'video'>('all');
   const [sortBy, setSortBy] = useState<'default' | 'size-asc' | 'size-desc'>('default');
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   const { platform, title, media, authorName, authorAvatar, likeCount, commentCount } = result;
 
@@ -97,10 +100,60 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
           </button>
           <h3 className="text-white text-sm font-semibold">Media Inspector</h3>
         </div>
-        <span className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border ${colors.text} ${colors.bg} ${colors.border}`}>
-          {platform}
-        </span>
+        <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={() => setIsQrOpen(true)}
+            className="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+            title="Scan QR to Mobile"
+          >
+            <QrCode className="w-4 h-4" />
+          </button>
+          <span className={`text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full border ${colors.text} ${colors.bg} ${colors.border}`}>
+            {platform}
+          </span>
+        </div>
       </div>
+
+      {/* QR Code Scan Modal Overlay (Feature 5) */}
+      {isQrOpen && (
+        <div className="absolute inset-0 bg-black/90 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-6 text-center rounded-none sm:rounded-[40px] transition-all duration-300">
+          <div className="bg-zinc-950 border border-white/10 p-5 rounded-3xl max-w-[280px] w-full flex flex-col items-center space-y-4 shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setIsQrOpen(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-white transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider mt-1">Scan to Mobile</h4>
+            <p className="text-gray-400 text-[9px] leading-normal px-2">
+              Scan this code with your phone camera to instantly load this post's media on mobile.
+            </p>
+
+            {/* QR Code Image Container */}
+            <div className="bg-white p-2.5 rounded-2xl shadow-inner border border-white/20">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(
+                  window.location.origin + window.location.pathname + '?url=' + encodeURIComponent(analyzedUrl)
+                )}`}
+                alt="QR Code"
+                className="w-[130px] h-[130px] object-contain"
+                loading="lazy"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsQrOpen(false)}
+              className="w-full py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all border border-white/5"
+            >
+              Close Panel
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Social Post Metadata Card (Feature 3) */}
       <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 space-y-3">
