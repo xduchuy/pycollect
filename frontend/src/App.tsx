@@ -96,14 +96,7 @@ export const App: React.FC = () => {
     setSelectedIds(next);
   };
 
-  const selectAll = () => {
-    if (!result) return;
-    setSelectedIds(new Set(result.media.map(m => m.id)));
-  };
 
-  const clearSelection = () => {
-    setSelectedIds(new Set());
-  };
 
   // MULTI / SINGLE DOWNLOAD PIPELINE
   const handleDownload = async () => {
@@ -233,7 +226,7 @@ export const App: React.FC = () => {
   };
 
   // DYNAMIC COUNTERS & ESTIMATES
-  const detectedCount = result ? result.media.length : 0;
+
   const selectedCount = selectedIds.size;
   const platform = result ? result.platform : null;
   const estimatedSize = result 
