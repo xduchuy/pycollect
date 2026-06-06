@@ -349,24 +349,7 @@ export const App: React.FC = () => {
               </div>
             </button>
             
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={selectAll}
-                disabled={detectedCount === 0 || isLoading}
-                className="py-3 rounded-xl text-gray-300 bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-40 disabled:pointer-events-none transition-all text-xs font-semibold"
-              >
-                Select All
-              </button>
-              <button
-                type="button"
-                onClick={clearSelection}
-                disabled={detectedCount === 0 || isLoading}
-                className="py-3 rounded-xl text-gray-500 hover:text-white disabled:opacity-40 disabled:pointer-events-none transition-all text-xs font-semibold"
-              >
-                Clear Selection
-              </button>
-            </div>
+            {/* Removed Select All / Clear Selection grid */}
           </section>
 
           {/* Small Privacy Note */}
