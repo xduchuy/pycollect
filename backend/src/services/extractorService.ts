@@ -8,6 +8,7 @@ import { PlaywrightStrategy } from './strategies/playwrightStrategy';
 import { MockStrategy } from './strategies/mockStrategy';
 import { InstagramEmbedStrategy } from './strategies/instagramEmbedStrategy';
 import { TiktokApiStrategy } from './strategies/tiktokApiStrategy';
+import { InstagramApiStrategy } from './strategies/instagramApiStrategy';
 
 export class ExtractorService {
   
@@ -25,10 +26,11 @@ export class ExtractorService {
     const mock = new MockStrategy();
     const ttApi = new TiktokApiStrategy();
     const igEmbed = new InstagramEmbedStrategy();
+    const igApi = new InstagramApiStrategy();
 
     switch (platform) {
       case 'instagram':
-        return [igEmbed, og, gdl, ytdl, pw, mock];
+        return [igApi, igEmbed, og, gdl, ytdl, pw, mock];
       case 'facebook':
         return [og, ytdl, pw, mock];
       case 'tiktok':

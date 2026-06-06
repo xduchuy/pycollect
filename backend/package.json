@@ -8,6 +8,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@mrnima/instagram-downloader": "^1.0.0",
     "archiver": "^6.0.2",
     "cors": "^2.8.5",
     "express": "^4.19.2"
