@@ -112,7 +112,7 @@ body {
 
 #toggle-input:checked + .toggle-track .toggle-handle,
 .toggle-track.checked .toggle-handle {
-  transform: translateX(calc(100% - 120px));
+  transform: translateX(100px);
 }
 
 #toggle-input:checked + .toggle-track .indicator-light,
@@ -152,6 +152,7 @@ body {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.02);
+  padding: 26px 24px;
 }
 
 .download-btn:not(:disabled):hover {

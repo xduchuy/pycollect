@@ -330,7 +330,7 @@ export const App: React.FC = () => {
               type="button"
               onClick={handleDownload}
               disabled={selectedCount === 0 || isLoading}
-              className={`w-full py-4.5 px-6 flex items-center justify-between download-btn transition-all outline-none ${
+              className={`w-full flex items-center justify-between download-btn transition-all outline-none ${
                 selectedCount > 0 && !isDownloading ? 'ready' : ''
               } ${isDownloading ? 'downloading' : ''}`}
             >
