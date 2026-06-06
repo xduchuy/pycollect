@@ -141,3 +141,70 @@ body {
     2px 2px 4px #181818, 
     -2px -2px 4px #3c3c3c;
 }
+
+/* Neumorphic Dark Download Button Styles */
+.download-btn {
+  background: #2a2a2a;
+  border-radius: 20px;
+  box-shadow: 
+    6px 6px 12px #181818, 
+    -6px -6px 12px #3c3c3c;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.download-btn:not(:disabled):hover {
+  background: #2c2c2c;
+  box-shadow: 
+    8px 8px 16px #161616, 
+    -8px -8px 16px #404040;
+}
+
+.download-btn:not(:disabled):active,
+.download-btn.downloading {
+  box-shadow: 
+    inset 4px 4px 8px #161616, 
+    inset -4px -4px 8px #2d2d2d;
+  background: #262626;
+}
+
+.download-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 
+    inset 2px 2px 5px #181818, 
+    inset -2px -2px 5px #2d2d2d;
+  background: #222222;
+}
+
+/* Cyan Status LED */
+.download-led {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #555555;
+  transition: all 0.4s ease;
+}
+
+.download-btn.ready .download-led {
+  background-color: #00f2fe;
+  box-shadow: 0 0 8px #00f2fe, 0 0 16px #00f2fe;
+}
+
+/* Pulsing effect for cyan light when downloading */
+@keyframes pulse-cyan {
+  0%, 100% {
+    box-shadow: 0 0 8px #00f2fe, 0 0 16px #00f2fe;
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 3px #00f2fe, 0 0 6px #00f2fe;
+    opacity: 0.5;
+  }
+}
+
+.download-btn.downloading .download-led {
+  background-color: #00f2fe;
+  animation: pulse-cyan 1.2s infinite ease-in-out;
+}

@@ -330,9 +330,23 @@ export const App: React.FC = () => {
               type="button"
               onClick={handleDownload}
               disabled={selectedCount === 0 || isLoading}
-              className="w-full py-4 rounded-2xl text-white font-semibold bg-gradient-to-r from-[#4facfe] via-[#00f2fe] to-[#f9d423] hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center space-x-2 shadow-lg shadow-[#00f2fe]/10 disabled:opacity-40 disabled:pointer-events-none"
+              className={`w-full py-4.5 px-6 flex items-center justify-between download-btn transition-all outline-none ${
+                selectedCount > 0 && !isDownloading ? 'ready' : ''
+              } ${isDownloading ? 'downloading' : ''}`}
             >
-              <span>Download Selected</span>
+              <div className="flex items-center space-x-3">
+                <div className="download-led"></div>
+                <span className="text-white text-xs font-semibold tracking-widest uppercase select-none">
+                  {isDownloading ? 'Downloading Package...' : 'Download Package'}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-[10px] text-gray-500 font-mono">
+                  {selectedCount} files ({estimatedSize.toFixed(1)} MB)
+                </span>
+                {/* Subtle handle detail line matching the toggle slider */}
+                <div className="w-[3px] h-3 bg-zinc-700/80 rounded-[1px] ml-1"></div>
+              </div>
             </button>
             
             <div className="grid grid-cols-2 gap-3">
