@@ -70,14 +70,17 @@ app.post('/api/analyze', async (req, res) => {
 
 // Endpoint: Proxy to stream remote assets and prevent CORS/Hotlinking errors
 app.get('/api/proxy', async (req, res) => {
+  const targetUrl = req.query.url as string;
   try {
-    const targetUrl = req.query.url as string;
     if (!targetUrl) {
       return res.status(400).json({ error: 'URL query parameter is required' });
     }
 
+    console.log(`[PROXY] Requesting: ${targetUrl.substring(0, 80)}... | Range: ${req.headers.range || 'none'}`);
+
     const headers: Record<string, string> = {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept-Encoding': 'identity' // request uncompressed data to avoid size mismatches
     };
     if (targetUrl.includes('tiktok.com') || targetUrl.includes('tikwm.com')) {
       headers['Referer'] = 'https://www.tiktok.com/';
@@ -92,6 +95,7 @@ app.get('/api/proxy', async (req, res) => {
 
     const response = await fetch(targetUrl, { headers });
     if (!response.ok && response.status !== 206) {
+      console.error(`[PROXY ERROR] Remote fetch failed for ${targetUrl.substring(0, 80)}... Status: ${response.status}`);
       return res.status(response.status).json({ error: `Proxy failed to load remote asset. Status: ${response.status}` });
     }
 
@@ -116,18 +120,23 @@ app.get('/api/proxy', async (req, res) => {
       res.setHeader('Content-Length', contentLength);
     }
 
+    console.log(`[PROXY] Response: ${response.status} | Content-Type: ${contentType} | Content-Range: ${contentRange || 'none'}`);
+
     // Send the matching status (e.g. 206 Partial Content or 200 OK)
     res.status(response.status);
 
     // Convert web response stream to Node stream and pipe it back to the user
     if (response.body) {
-      const nodeStream = Readable.from(response.body as any);
+      // Use Readable.fromWeb in Node 18+ to avoid hanging issues with Web Streams
+      const nodeStream = (Readable as any).fromWeb 
+        ? (Readable as any).fromWeb(response.body)
+        : Readable.from(response.body as any);
       nodeStream.pipe(res);
     } else {
       res.status(500).json({ error: 'Remote response body is empty' });
     }
   } catch (err: any) {
-    console.error('Proxy error:', err.message);
+    console.error(`[PROXY ERROR] Exception for ${targetUrl ? targetUrl.substring(0, 80) : 'unknown'}:`, err.message);
     if (!res.headersSent) {
       res.status(500).json({ error: err.message });
     }
