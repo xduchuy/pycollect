@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom background styles matching reference mockup */
+body {
+  background-color: #55585a; /* matches outer canvas */
+  min-height: 100vh;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glow effect for the top sun-like element */
+.glow-sun {
+  background: radial-gradient(circle, rgba(255, 94, 0, 0.8) 0%, rgba(255, 140, 0, 0.3) 40%, transparent 70%);
+  filter: blur(25px);
+}
+
+/* Subtle border for the metric cards */
+.metric-card {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+}
+
+/* Selected state glowing gradient border */
+.media-item-selected {
+  border-color: #00f2fe !important;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.3), inset 0 0 10px rgba(0, 242, 254, 0.05);
+}
+
+/* Custom thin scrollbar for components */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Shake keyframes */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+.shake-input {
+  animation: shake 0.2s ease-in-out 0s 2;
+}

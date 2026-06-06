@@ -1,0 +1,25 @@
+{
+  "name": "media-collector-backend",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --watch src -e ts --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "archiver": "^6.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "media-collector-workspace": "file:.."
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.7",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
