@@ -17,7 +17,15 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Modal / Feedback states
-  const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
+  const [previewList, setPreviewList] = useState<MediaItem[]>([]);
+  const [previewInitialIndex, setPreviewInitialIndex] = useState<number>(0);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const handlePreviewOpen = (_item: MediaItem, index: number, currentList: MediaItem[]) => {
+    setPreviewList(currentList);
+    setPreviewInitialIndex(index);
+    setIsPreviewOpen(true);
+  };
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
   const [downloadStatus, setDownloadStatus] = useState('');
@@ -174,7 +182,7 @@ export const App: React.FC = () => {
   };
 
   const handleDownloadSingle = async (item: MediaItem) => {
-    setPreviewItem(null);
+    setIsPreviewOpen(false);
     
     setIsDownloading(true);
     setDownloadProgress(0);
@@ -274,11 +282,10 @@ export const App: React.FC = () => {
 
               {!isLoading && result && (
                 <MediaGallery
-                  platform={result.platform}
-                  media={result.media}
+                  result={result}
                   selectedIds={selectedIds}
                   onToggleSelect={toggleSelect}
-                  onPreview={setPreviewItem}
+                  onPreview={handlePreviewOpen}
                   onBack={handleBack}
                 />
               )}
@@ -342,10 +349,11 @@ export const App: React.FC = () => {
 
       {/* Media Detail Preview Modal */}
       <PreviewModal
-        isOpen={!!previewItem}
-        item={previewItem}
+        isOpen={isPreviewOpen}
+        mediaList={previewList}
+        initialIndex={previewInitialIndex}
         platform={platform || ''}
-        onClose={() => setPreviewItem(null)}
+        onClose={() => setIsPreviewOpen(false)}
         onDownloadSingle={handleDownloadSingle}
       />
 

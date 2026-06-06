@@ -53,6 +53,10 @@ export class TiktokApiStrategy implements ExtractionStrategy {
       return {
         platform: 'TikTok',
         title: data.title || 'TikTok Video Post',
+        authorName: data.author?.nickname || data.author?.unique_id || 'TikTok Creator',
+        authorAvatar: data.author?.avatar || '',
+        likeCount: data.digg_count || 0,
+        commentCount: data.comment_count || 0,
         media
       };
     } catch (e: any) {

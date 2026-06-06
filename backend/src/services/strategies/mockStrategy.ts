@@ -13,6 +13,10 @@ export class MockStrategy implements ExtractionStrategy {
       return {
         platform: 'Instagram',
         title: 'Exploring Tokyo under the rain. Cyberpunk reflections and futuristic details 🌧️✨ #tokyo #neon #cyberpunk',
+        authorName: 'cyber_traveler',
+        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&h=150&q=80',
+        likeCount: 12450,
+        commentCount: 840,
         media: [
           {
             id: 'ig-1',
@@ -52,6 +56,10 @@ export class MockStrategy implements ExtractionStrategy {
       return {
         platform: 'TikTok',
         title: 'New hypercar rendering concept complete. Check out the neon tail lights! 🏎️⚡ #3d #blender #automotive',
+        authorName: 'supercar_renders',
+        authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&h=150&q=80',
+        likeCount: 38200,
+        commentCount: 1420,
         media: [
           {
             id: 'tt-1',
@@ -76,6 +84,10 @@ export class MockStrategy implements ExtractionStrategy {
       return {
         platform: 'Facebook',
         title: 'Sharing some design projects from the past month. Really enjoyed working on abstract shapes and lighting layers. 📐💡',
+        authorName: 'retro_designs_studio',
+        authorAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&h=150&q=80',
+        likeCount: 1450,
+        commentCount: 95,
         media: [
           {
             id: 'fb-1',

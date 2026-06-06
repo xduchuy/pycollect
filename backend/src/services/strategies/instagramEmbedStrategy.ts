@@ -36,6 +36,8 @@ export class InstagramEmbedStrategy implements ExtractionStrategy {
       return {
         platform: 'Instagram',
         title: data.title || `Instagram post by @${data.author_name || 'creator'}`,
+        authorName: data.author_name || 'Instagram Creator',
+        authorAvatar: '',
         media
       };
     } catch (e: any) {

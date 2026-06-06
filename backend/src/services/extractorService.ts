@@ -127,7 +127,11 @@ export class ExtractorService {
     return {
       platform: platformLabel,
       title: result.title || 'Parsed Post Details',
-      media: deduplicatedMedia
+      media: deduplicatedMedia,
+      authorName: result.authorName,
+      authorAvatar: result.authorAvatar,
+      likeCount: result.likeCount,
+      commentCount: result.commentCount
     };
   }
 }

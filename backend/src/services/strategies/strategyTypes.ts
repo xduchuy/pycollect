@@ -12,6 +12,10 @@ export interface ExtractionResult {
   platform?: string;
   title: string;
   media: MediaItem[];
+  authorName?: string;
+  authorAvatar?: string;
+  likeCount?: number;
+  commentCount?: number;
 }
 
 export interface ExtractionStrategy {

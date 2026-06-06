@@ -11,4 +11,8 @@ export interface AnalysisResult {
   platform: string;
   title: string;
   media: MediaItem[];
+  authorName?: string;
+  authorAvatar?: string;
+  likeCount?: number;
+  commentCount?: number;
 }

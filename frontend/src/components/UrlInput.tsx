@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Clipboard } from 'lucide-react';
 
 interface UrlInputProps {
   onAnalyze: (url: string) => void;
@@ -38,7 +39,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
       cleanUrl.includes('fb.com');
 
     if (!trimmed || !isSupported) {
-      // Empty or invalid URL: Do absolutely nothing (no slide, no light, no shake)
+      // Empty or invalid URL: Do absolutely nothing
       return;
     }
 
@@ -60,16 +61,43 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
     processAnalysis(url);
   };
 
+  const handleClipboardPaste = async () => {
+    if (isLoading) return;
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setUrl(text);
+        processAnalysis(text);
+      }
+    } catch (err) {
+      console.warn('Clipboard read failed:', err);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6 w-full">
-      <input
-        type="text"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        disabled={isLoading}
-        placeholder="Paste Instagram, Facebook, or TikTok link..."
-        className={`w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white text-sm focus:outline-none focus:ring-1 transition-all placeholder-gray-500 ${getBrandedInputBorder()}`}
-      />
+      <div className="relative w-full">
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          disabled={isLoading}
+          placeholder="Paste Instagram, Facebook, or TikTok link..."
+          className={`w-full bg-black/40 border border-white/10 rounded-2xl pl-5 pr-14 py-4 text-white text-sm focus:outline-none focus:ring-1 transition-all placeholder-gray-500 ${getBrandedInputBorder()}`}
+        />
+        
+        {/* Paste Clipboard Button */}
+        {!isLoading && (
+          <button
+            type="button"
+            onClick={handleClipboardPaste}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+            title="Paste from clipboard"
+          >
+            <Clipboard className="w-4.5 h-4.5" />
+          </button>
+        )}
+      </div>
 
       <div className="flex flex-col items-center gap-3 mt-2">
         {/* Toggle Button Track styled as a clickable button to avoid iOS label double-click bugs */}
