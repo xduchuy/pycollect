@@ -14,6 +14,14 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Rewrite Vercel multi-project routePrefix if present
+app.use((req, _res, next) => {
+  if (req.url.startsWith('/_/backend')) {
+    req.url = req.url.replace('/_/backend', '');
+  }
+  next();
+});
+
 // Serve the mock PNG files from the local static directory
 const staticPath = path.join(__dirname, '../static');
 app.use('/static', express.static(staticPath));

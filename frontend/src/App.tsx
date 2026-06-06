@@ -35,8 +35,9 @@ export const App: React.FC = () => {
     setResult(null);
     setSelectedIds(new Set());
 
+    const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch(`${base}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url }),
@@ -48,10 +49,30 @@ export const App: React.FC = () => {
       }
 
       const data: AnalysisResult = await response.json();
-      setResult(data);
+
+      // Map static/api relative URLs to use backend service prefix in production
+      const mapUrl = (urlStr: string) => {
+        if (urlStr.startsWith('/api/') || urlStr.startsWith('/static/')) {
+          return `${base}${urlStr}`;
+        }
+        return urlStr;
+      };
+
+      const mappedMedia = data.media.map(m => ({
+        ...m,
+        thumbnailUrl: mapUrl(m.thumbnailUrl),
+        downloadUrl: mapUrl(m.downloadUrl),
+      }));
+
+      const mappedData = {
+        ...data,
+        media: mappedMedia,
+      };
+
+      setResult(mappedData);
       
       // Default to select all media
-      setSelectedIds(new Set(data.media.map(m => m.id)));
+      setSelectedIds(new Set(mappedMedia.map(m => m.id)));
     } catch (err: any) {
       setErrorMessage(err.message || 'An error occurred during link analysis.');
     } finally {
@@ -96,9 +117,10 @@ export const App: React.FC = () => {
     setDownloadSubstatus('Connecting to download server...');
     setDownloadSuccess(false);
 
+    const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
       // Send download request to backend
-      const response = await fetch('/api/download', {
+      const response = await fetch(`${base}/api/download`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: selectedItems }),
@@ -167,8 +189,9 @@ export const App: React.FC = () => {
     setDownloadSubstatus(`Fetching ${item.type.toLowerCase()}...`);
     setDownloadSuccess(false);
 
+    const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
-      const response = await fetch('/api/download', {
+      const response = await fetch(`${base}/api/download`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: [item] }),
