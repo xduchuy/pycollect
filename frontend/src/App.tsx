@@ -268,20 +268,7 @@ export const App: React.FC = () => {
           <section className="mt-4 z-10 relative">
             <div className="relative overflow-hidden flex flex-col justify-center transition-all duration-300">
               
-              {isLoading && (
-                <div className="flex flex-col items-center justify-center py-6 space-y-4">
-                  <div className="relative w-12 h-12">
-                    <div className="absolute inset-0 border-2 border-white/10 rounded-full"></div>
-                    <div className="absolute inset-0 border-2 border-t-[#00f2fe] border-r-[#f9d423] rounded-full animate-spin"></div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-white text-sm font-medium">Analyzing URL...</p>
-                    <p className="text-gray-500 text-xs mt-1">Extracting media links...</p>
-                  </div>
-                </div>
-              )}
-
-              {!isLoading && !result && (
+              {!result && (
                 <UrlInput onAnalyze={handleAnalyze} isLoading={isLoading} />
               )}
 

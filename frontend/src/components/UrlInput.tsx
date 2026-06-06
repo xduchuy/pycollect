@@ -45,10 +45,8 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
     // Valid URL: slide ON and turn light ON immediately
     setChecked(true);
 
-    // Delay calling onAnalyze until the 1s slide animation completes
-    setTimeout(() => {
-      onAnalyze(trimmed);
-    }, 1000);
+    // Start the analysis immediately in parallel with the slide animation
+    onAnalyze(trimmed);
   };
 
   const handleToggleClick = () => {
