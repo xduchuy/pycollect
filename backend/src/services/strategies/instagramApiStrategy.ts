@@ -30,10 +30,46 @@ export class InstagramApiStrategy implements ExtractionStrategy {
         throw new Error('No media items found in Instagram API response');
       }
 
+      let title = 'Instagram Post';
+      let authorName = 'Instagram Creator';
+
+      try {
+        const ogRes = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+          }
+        });
+        if (ogRes.ok) {
+          const html = await ogRes.text();
+          const titleMatch = html.match(/<meta\s+property=["']og:title["']\s+content=["'](.*?)["']/i) ||
+                             html.match(/<meta\s+name=["']og:title["']\s+content=["'](.*?)["']/i) ||
+                             html.match(/<title>(.*?)<\/title>/i);
+          if (titleMatch) {
+            const rawTitle = titleMatch[1];
+            const decodedTitle = rawTitle
+              .replace(/&amp;/g, '&')
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'");
+            
+            title = decodedTitle;
+
+            const authorMatch = decodedTitle.match(/^([^:]+)\s+on\s+Instagram/i) || 
+                                decodedTitle.match(/^Instagram\s+post\s+by\s+@?([^\s:]+)/i);
+            if (authorMatch) {
+              authorName = authorMatch[1].trim();
+            }
+          }
+        }
+      } catch (err) {
+        console.log('[Instagram API] Failed to enrich metadata from HTML:', err);
+      }
+
       return {
         platform: 'Instagram',
-        title: `Instagram Post`,
-        authorName: 'Instagram Creator',
+        title,
+        authorName,
         authorAvatar: '',
         media
       };

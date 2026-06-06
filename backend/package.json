@@ -9,9 +9,15 @@
   },
   "dependencies": {
     "@mrnima/instagram-downloader": "^1.0.0",
+    "@sasmeee/igdl": "^0.0.1-security",
     "archiver": "^6.0.2",
+    "cheerio": "^1.2.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "instagram-url-direct": "^2.0.7",
+    "playwright": "^1.60.0",
+    "priyansh-ig-downloader": "^2.0.4",
+    "snapinsta": "^1.0.5"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.2",

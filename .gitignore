@@ -5,3 +5,5 @@ dist/
 *.log
 backend/yt-dlp.exe
 backend/gallery-dl.exe
+backend/scratch-downloader/
+
