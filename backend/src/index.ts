@@ -192,8 +192,12 @@ app.post('/api/download', async (req, res) => {
   }
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Media Collector Express server running on port ${PORT}`);
-  console.log(`Serving static files from: ${staticPath}`);
-});
+// Start Server if not running as a Vercel serverless function
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Media Collector Express server running on port ${PORT}`);
+    console.log(`Serving static files from: ${staticPath}`);
+  });
+}
+
+export default app;
