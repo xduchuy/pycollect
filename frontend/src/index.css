@@ -112,7 +112,7 @@ body {
 
 #toggle-input:checked + .toggle-track .toggle-handle,
 .toggle-track.checked .toggle-handle {
-  transform: translateX(160px);
+  transform: translateX(calc(100% - 120px));
 }
 
 #toggle-input:checked + .toggle-track .indicator-light,

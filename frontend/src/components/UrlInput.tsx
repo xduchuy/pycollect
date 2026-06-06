@@ -85,7 +85,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
               handleToggleClick();
             }
           }}
-          className={`toggle-track w-[280px] h-[110px] flex items-center p-2 outline-none select-none ${(checked || isLoading) ? 'checked' : ''} ${isLoading ? 'pointer-events-none opacity-90' : 'cursor-pointer'}`}
+          className={`toggle-track w-full h-[110px] flex items-center p-2 outline-none select-none ${(checked || isLoading) ? 'checked' : ''} ${isLoading ? 'pointer-events-none opacity-90' : 'cursor-pointer'}`}
           data-purpose="toggle-ui"
         >
           {/* Glowing status light */}
