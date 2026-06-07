@@ -5,7 +5,6 @@ import { OpenGraphStrategy } from './strategies/ogStrategy';
 import { YtDlpStrategy } from './strategies/ytDlpStrategy';
 import { GalleryDlStrategy } from './strategies/galleryDlStrategy';
 import { PlaywrightStrategy } from './strategies/playwrightStrategy';
-import { MockStrategy } from './strategies/mockStrategy';
 import { InstagramEmbedStrategy } from './strategies/instagramEmbedStrategy';
 import { TiktokApiStrategy } from './strategies/tiktokApiStrategy';
 import { InstagramApiStrategy } from './strategies/instagramApiStrategy';
@@ -23,22 +22,21 @@ export class ExtractorService {
     const ytdl = new YtDlpStrategy();
     const gdl = new GalleryDlStrategy();
     const pw = new PlaywrightStrategy();
-    const mock = new MockStrategy();
     const ttApi = new TiktokApiStrategy();
     const igEmbed = new InstagramEmbedStrategy();
     const igApi = new InstagramApiStrategy();
 
     switch (platform) {
       case 'instagram':
-        return [igApi, igEmbed, og, gdl, ytdl, pw, mock];
+        return [igApi, igEmbed, og, gdl, ytdl, pw];
       case 'facebook':
-        return [og, ytdl, pw, mock];
+        return [og, ytdl, pw];
       case 'tiktok':
-        return [ttApi, og, ytdl, pw, mock];
+        return [ttApi, og, ytdl, pw];
       case 'youtube':
-        return [ytdl, mock];
+        return [ytdl];
       default:
-        return [mock];
+        return [];
     }
   }
 
