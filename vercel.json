@@ -11,10 +11,7 @@
   },
   "functions": {
     "backend/src/index.ts": {
-      "includeFiles": [
-        "backend/yt-dlp",
-        "backend/yt-dlp.exe"
-      ]
+      "includeFiles": "backend/yt-dlp*"
     }
   }
 }
