@@ -49,7 +49,9 @@ export const App: React.FC = () => {
 
     const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
-      const cookie = localStorage.getItem('mcollect_instagram_cookie') || '';
+      const cookie = activeTab === 'youtube'
+        ? (localStorage.getItem('mcollect_youtube_cookie') || '')
+        : (localStorage.getItem('mcollect_instagram_cookie') || '');
       const response = await fetch(`${base}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

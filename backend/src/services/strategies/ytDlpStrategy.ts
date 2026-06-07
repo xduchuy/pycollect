@@ -9,13 +9,16 @@ const execAsync = promisify(exec);
 export class YtDlpStrategy implements ExtractionStrategy {
   public name = 'yt-dlp';
 
-  public async run(url: string): Promise<ExtractionResult> {
+  public async run(url: string, cookie?: string): Promise<ExtractionResult> {
     try {
       const localExe = path.resolve(__dirname, '../../../yt-dlp.exe');
       const exe = fs.existsSync(localExe) ? `"${localExe}"` : 'yt-dlp';
 
+      // Append cookie headers if provided to bypass datacenter blocks
+      const cookieOption = cookie ? `--add-header "Cookie: ${cookie}"` : '';
+
       // Execute command to dump meta-json
-      const { stdout } = await execAsync(`${exe} --dump-json "${url}"`);
+      const { stdout } = await execAsync(`${exe} ${cookieOption} --dump-json "${url}"`);
       const data = JSON.parse(stdout);
 
       const media: MediaItem[] = [];

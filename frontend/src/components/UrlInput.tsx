@@ -11,6 +11,12 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
   const [checked, setChecked] = useState(false);
   const [cookie, setCookie] = useState(() => localStorage.getItem('mcollect_instagram_cookie') || '');
   const [showSettings, setShowSettings] = useState(false);
+  const [hasClipboard, setHasClipboard] = useState(false);
+
+  // Detect clipboard API availability on mount
+  useEffect(() => {
+    setHasClipboard(!!(navigator.clipboard && navigator.clipboard.readText));
+  }, []);
 
   // Reset checked state when loading completes
   useEffect(() => {
@@ -100,7 +106,7 @@ export const UrlInput: React.FC<UrlInputProps> = ({ onAnalyze, isLoading }) => {
         
         {/* Paste & Settings Buttons */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
-          {!isLoading && (
+          {!isLoading && hasClipboard && (
             <button
               type="button"
               onClick={handleClipboardPaste}
