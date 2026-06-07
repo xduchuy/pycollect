@@ -10,6 +10,15 @@ export class YtDlpStrategy implements ExtractionStrategy {
   public name = 'yt-dlp';
 
   public async run(url: string, cookie?: string): Promise<ExtractionResult> {
+    // Force Vercel's Node File Trace (NFT) compiler to bundle the standalone binaries
+    // by using static path resolution inside an unreachable code path.
+    if (process.env.VERCEL_NEVER_TRUE) {
+      try {
+        fs.readFileSync(path.join(__dirname, '../../../yt-dlp'));
+        fs.readFileSync(path.join(__dirname, '../../../yt-dlp.exe'));
+      } catch (_) {}
+    }
+
     try {
       // 1. Resolve Windows exe path
       let localExe = path.join(process.cwd(), 'backend/yt-dlp.exe');
