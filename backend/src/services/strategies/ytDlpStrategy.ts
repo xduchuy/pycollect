@@ -31,15 +31,39 @@ export class YtDlpStrategy implements ExtractionStrategy {
 
       let exe = 'yt-dlp';
 
-      if (process.platform === 'win32' && fs.existsSync(localExe)) {
-        exe = `"${localExe}"`;
-      } else if (fs.existsSync(localLinuxExe)) {
-        try {
-          fs.chmodSync(localLinuxExe, '755');
-        } catch (e) {
-          console.warn('Failed to chmod local Linux yt-dlp:', e);
+      if (process.platform === 'win32') {
+        if (fs.existsSync(localExe)) {
+          exe = `"${localExe}"`;
         }
-        exe = `"${localLinuxExe}"`;
+      } else {
+        if (fs.existsSync(localLinuxExe)) {
+          const tmpExePath = '/tmp/yt-dlp';
+          try {
+            let shouldCopy = true;
+            if (fs.existsSync(tmpExePath)) {
+              const srcStat = fs.statSync(localLinuxExe);
+              const destStat = fs.statSync(tmpExePath);
+              if (srcStat.size === destStat.size) {
+                shouldCopy = false;
+              }
+            }
+            if (shouldCopy) {
+              console.log(`[YTDL-STRATEGY] Copying standalone Linux binary ${localLinuxExe} -> ${tmpExePath}`);
+              fs.copyFileSync(localLinuxExe, tmpExePath);
+              fs.chmodSync(tmpExePath, '755');
+              console.log('[YTDL-STRATEGY] Binary copied and chmodded successfully.');
+            }
+            exe = tmpExePath;
+          } catch (err: any) {
+            console.warn(`[YTDL-STRATEGY] Failed to copy/chmod binary to /tmp: ${err.message}. Falling back to original path.`);
+            try {
+              fs.chmodSync(localLinuxExe, '755');
+            } catch (chmodErr: any) {
+              console.warn(`[YTDL-STRATEGY] Failed to chmod local Linux yt-dlp in-place: ${chmodErr.message}`);
+            }
+            exe = `"${localLinuxExe}"`;
+          }
+        }
       }
 
       // Append cookie headers if provided to bypass datacenter blocks

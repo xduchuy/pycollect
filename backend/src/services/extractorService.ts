@@ -43,6 +43,7 @@ export class ExtractorService {
   // Core: Runs strategy execution waterfall
   public static async extractWithFallback(url: string, platform: string, cookie?: string): Promise<ExtractionResult> {
     const strategies = this.getStrategies(platform);
+    const errors: string[] = [];
 
     for (const strategy of strategies) {
       try {
@@ -55,12 +56,13 @@ export class ExtractorService {
         }
       } catch (err: any) {
         console.warn(`[PIPELINE] Strategy "${strategy.name}" failed:`, err.message);
+        errors.push(`${strategy.name}: ${err.message}`);
         // Small wait delay before trying next strategy
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
     }
 
-    throw new Error('All extraction strategies failed. Could not scrape media from the provided link.');
+    throw new Error(`All extraction strategies failed. Details: [${errors.join(' | ')}]`);
   }
 
   // Validator: Ensure extraction payload has active media items
