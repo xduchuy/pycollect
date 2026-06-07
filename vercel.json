@@ -8,6 +8,14 @@
       "entrypoint": "backend/src/index.ts",
       "routePrefix": "/_/backend"
     }
+  },
+  "functions": {
+    "backend/src/index.ts": {
+      "includeFiles": [
+        "backend/yt-dlp",
+        "backend/yt-dlp.exe"
+      ]
+    }
   }
 }
 

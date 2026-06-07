@@ -11,8 +11,24 @@ export class YtDlpStrategy implements ExtractionStrategy {
 
   public async run(url: string, cookie?: string): Promise<ExtractionResult> {
     try {
-      const localExe = path.resolve(__dirname, '../../../yt-dlp.exe');
-      const localLinuxExe = path.resolve(__dirname, '../../../yt-dlp');
+      // 1. Resolve Windows exe path
+      let localExe = path.join(process.cwd(), 'backend/yt-dlp.exe');
+      if (!fs.existsSync(localExe)) {
+        localExe = path.join(process.cwd(), 'yt-dlp.exe');
+      }
+      if (!fs.existsSync(localExe)) {
+        localExe = path.resolve(__dirname, '../../../yt-dlp.exe');
+      }
+
+      // 2. Resolve Linux binary path
+      let localLinuxExe = path.join(process.cwd(), 'backend/yt-dlp');
+      if (!fs.existsSync(localLinuxExe)) {
+        localLinuxExe = path.join(process.cwd(), 'yt-dlp');
+      }
+      if (!fs.existsSync(localLinuxExe)) {
+        localLinuxExe = path.resolve(__dirname, '../../../yt-dlp');
+      }
+
       let exe = 'yt-dlp';
 
       if (process.platform === 'win32' && fs.existsSync(localExe)) {
