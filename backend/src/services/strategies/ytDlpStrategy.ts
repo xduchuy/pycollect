@@ -162,7 +162,12 @@ export class YtDlpStrategy implements ExtractionStrategy {
   }
 
   private sanitizeFilename(str: string): string {
-    return str.replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 50);
+    const normalized = str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // remove combining diacritical marks
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+    return normalized.replace(/[^a-zA-Z0-9_\-]/g, '_').replace(/_+/g, '_').substring(0, 50);
   }
 
   private capitalize(str: string): string {
