@@ -138,17 +138,6 @@ export const App: React.FC = () => {
 
     const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
-      // Send download request to backend
-      const response = await fetch(`${base}/api/download`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: selectedItems }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Could not package media files.');
-      }
-
       // Parallel simulated UI progress
       let progress = 0;
       const interval = setInterval(() => {
@@ -169,29 +158,30 @@ export const App: React.FC = () => {
         }
       }, 80);
 
-      const blob = await response.blob();
-      clearInterval(interval);
-      setDownloadProgress(100);
-      setDownloadStatus('Success!');
-      setDownloadSubstatus(`Successfully saved ${selectedItems.length} files to downloads.`);
-      setDownloadSuccess(true);
+      // Construct direct GET URL for ZIP package download
+      const downloadUrl = `${base}/api/download?items=${encodeURIComponent(JSON.stringify(selectedItems))}`;
 
-      // Trigger client file save
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', selectedItems.length === 1 ? selectedItems[0].filename : 'media_collector_package.zip');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
+      // Create a hidden iframe to trigger the native download UI
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = downloadUrl;
+      document.body.appendChild(iframe);
 
-      setToastMessage(
-        selectedItems.length === 1 
-          ? 'Media file saved successfully!' 
-          : 'ZIP package saved successfully!'
-      );
-      setToastOpen(true);
+      setTimeout(() => {
+        clearInterval(interval);
+        setDownloadProgress(100);
+        setDownloadStatus('Success!');
+        setDownloadSubstatus(`Successfully saved ${selectedItems.length} files to downloads.`);
+        setDownloadSuccess(true);
+        setToastMessage(
+          selectedItems.length === 1 
+            ? 'Media file saved successfully!' 
+            : 'ZIP package saved successfully!'
+        );
+        setToastOpen(true);
+        iframe.remove();
+      }, 2000); // 2 seconds is enough to hand off the download to the browser engine
+
     } catch (err: any) {
       console.error(err);
       setDownloadStatus('Download Failed');
@@ -210,40 +200,34 @@ export const App: React.FC = () => {
 
     const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
-      const response = await fetch(`${base}/api/download`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: [item] }),
-      });
-
-      if (!response.ok) throw new Error('File download failed');
-
       // Short simulated progress
       let progress = 0;
       const interval = setInterval(() => {
         progress += 10;
         if (progress > 90) clearInterval(interval);
         else setDownloadProgress(progress);
-      }, 50);
+      }, 80);
 
-      const blob = await response.blob();
-      clearInterval(interval);
-      setDownloadProgress(100);
-      setDownloadStatus('Success!');
-      setDownloadSubstatus(`Saved ${item.filename}`);
-      setDownloadSuccess(true);
+      // Construct direct GET URL for single file download
+      const downloadUrl = `${base}/api/download?url=${encodeURIComponent(item.downloadUrl)}&filename=${encodeURIComponent(item.filename)}`;
 
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
-      link.setAttribute('download', item.filename);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
+      // Create a hidden iframe to trigger the native download UI
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = downloadUrl;
+      document.body.appendChild(iframe);
 
-      setToastMessage('Media file saved successfully!');
-      setToastOpen(true);
+      setTimeout(() => {
+        clearInterval(interval);
+        setDownloadProgress(100);
+        setDownloadStatus('Success!');
+        setDownloadSubstatus(`Saved ${item.filename}`);
+        setDownloadSuccess(true);
+        setToastMessage('Media file saved successfully!');
+        setToastOpen(true);
+        iframe.remove();
+      }, 1500);
+
     } catch (err: any) {
       console.error(err);
       setDownloadStatus('Download Failed');

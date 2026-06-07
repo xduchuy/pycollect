@@ -147,6 +147,123 @@ app.get('/api/proxy', async (req, res) => {
   }
 });
 
+// Endpoint: Direct Download Media (via GET query string for mobile compatibility)
+app.get('/api/download', async (req, res) => {
+  try {
+    const targetUrl = req.query.url as string;
+    const filename = req.query.filename as string;
+    const itemsStr = req.query.items as string;
+
+    // Case 1: ZIP Multi-file package zipping via GET
+    if (itemsStr) {
+      let items: any[] = [];
+      try {
+        items = JSON.parse(decodeURIComponent(itemsStr));
+      } catch (err) {
+        return res.status(400).json({ error: 'Invalid items query parameter' });
+      }
+
+      if (!Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({ error: 'No media items specified for download' });
+      }
+
+      // Normalize downloadUrl by stripping Vercel service route prefix if present
+      const normalizedItems = items.map((item: any) => {
+        let downloadUrl = item.downloadUrl || '';
+        if (downloadUrl.startsWith('/_/backend')) {
+          downloadUrl = downloadUrl.replace('/_/backend', '');
+        }
+        return { ...item, downloadUrl };
+      });
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="mcollect_package.zip"');
+
+      const archive = archiver('zip', { zlib: { level: 9 } });
+      archive.on('error', (err) => {
+        throw err;
+      });
+
+      archive.pipe(res);
+
+      for (const item of normalizedItems) {
+        if (item.downloadUrl.startsWith('/static')) {
+          const filePath = path.join(staticPath, item.filename);
+          if (fs.existsSync(filePath)) {
+            archive.file(filePath, { name: item.filename });
+          }
+        } else {
+          let actualUrl = item.downloadUrl;
+          if (actualUrl.startsWith('/api/proxy')) {
+            const urlParam = new URL(actualUrl, `http://localhost:${PORT}`).searchParams.get('url');
+            if (urlParam) actualUrl = urlParam;
+          }
+
+          try {
+            const fileResponse = await fetch(actualUrl);
+            if (fileResponse.ok && fileResponse.body) {
+              const fileStream = getReadableStream(fileResponse.body);
+              archive.append(fileStream, { name: item.filename });
+            }
+          } catch (err) {
+            console.warn(`Failed to package remote URL ${actualUrl}:`, err);
+          }
+        }
+      }
+
+      await archive.finalize();
+      return;
+    }
+
+    // Case 2: Single file download via GET
+    if (targetUrl && filename) {
+      let actualUrl = decodeURIComponent(targetUrl);
+      if (actualUrl.startsWith('/_/backend')) {
+        actualUrl = actualUrl.replace('/_/backend', '');
+      }
+
+      // If it's a local static file
+      if (actualUrl.startsWith('/static')) {
+        const filePath = path.join(staticPath, filename);
+        if (!fs.existsSync(filePath)) {
+          return res.status(404).json({ error: 'Source media file not found' });
+        }
+        res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+        res.setHeader('Content-Type', 'image/png');
+        return fs.createReadStream(filePath).pipe(res);
+      }
+
+      // If it's a remote URL, fetch and stream it back directly
+      if (actualUrl.startsWith('/api/proxy')) {
+        const urlParam = new URL(actualUrl, `http://localhost:${PORT}`).searchParams.get('url');
+        if (urlParam) actualUrl = urlParam;
+      }
+
+      const fileResponse = await fetch(actualUrl);
+      if (!fileResponse.ok) {
+        return res.status(fileResponse.status).json({ error: 'Failed to download file from CDN' });
+      }
+
+      const contentType = fileResponse.headers.get('content-type') || 'application/octet-stream';
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Type', contentType);
+
+      if (fileResponse.body) {
+        return getReadableStream(fileResponse.body).pipe(res);
+      } else {
+        return res.status(500).json({ error: 'File body stream is empty' });
+      }
+    }
+
+    return res.status(400).json({ error: 'Invalid parameters. Specify either items or (url and filename)' });
+  } catch (error: any) {
+    console.error('Download error:', error.message);
+    if (!res.headersSent) {
+      return res.status(500).json({ error: 'Failed to package files for download' });
+    }
+  }
+});
+
 // Endpoint: Download Media (single file stream or ZIP package compression)
 app.post('/api/download', async (req, res) => {
   try {
