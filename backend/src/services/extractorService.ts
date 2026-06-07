@@ -8,6 +8,7 @@ import { PlaywrightStrategy } from './strategies/playwrightStrategy';
 import { InstagramEmbedStrategy } from './strategies/instagramEmbedStrategy';
 import { TiktokApiStrategy } from './strategies/tiktokApiStrategy';
 import { InstagramApiStrategy } from './strategies/instagramApiStrategy';
+import { BtchYoutubeStrategy } from './strategies/btchYoutubeStrategy';
 
 export class ExtractorService {
   
@@ -25,6 +26,7 @@ export class ExtractorService {
     const ttApi = new TiktokApiStrategy();
     const igEmbed = new InstagramEmbedStrategy();
     const igApi = new InstagramApiStrategy();
+    const btchYt = new BtchYoutubeStrategy();
 
     switch (platform) {
       case 'instagram':
@@ -34,7 +36,7 @@ export class ExtractorService {
       case 'tiktok':
         return [ttApi, og, ytdl, pw];
       case 'youtube':
-        return [ytdl];
+        return [btchYt, ytdl];
       default:
         return [];
     }
