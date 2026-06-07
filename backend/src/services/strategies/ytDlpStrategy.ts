@@ -12,7 +12,19 @@ export class YtDlpStrategy implements ExtractionStrategy {
   public async run(url: string, cookie?: string): Promise<ExtractionResult> {
     try {
       const localExe = path.resolve(__dirname, '../../../yt-dlp.exe');
-      const exe = fs.existsSync(localExe) ? `"${localExe}"` : 'yt-dlp';
+      const localLinuxExe = path.resolve(__dirname, '../../../yt-dlp');
+      let exe = 'yt-dlp';
+
+      if (process.platform === 'win32' && fs.existsSync(localExe)) {
+        exe = `"${localExe}"`;
+      } else if (fs.existsSync(localLinuxExe)) {
+        try {
+          fs.chmodSync(localLinuxExe, '755');
+        } catch (e) {
+          console.warn('Failed to chmod local Linux yt-dlp:', e);
+        }
+        exe = `"${localLinuxExe}"`;
+      }
 
       // Append cookie headers if provided to bypass datacenter blocks
       const cookieOption = cookie ? `--add-header "Cookie: ${cookie}"` : '';
