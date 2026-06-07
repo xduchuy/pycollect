@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 import { ExtractionStrategy, ExtractionResult, MediaItem } from './strategyTypes';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 export class YtDlpStrategy implements ExtractionStrategy {
   public name = 'yt-dlp';
@@ -75,11 +75,17 @@ export class YtDlpStrategy implements ExtractionStrategy {
         }
       }
 
-      // Append cookie headers if provided to bypass datacenter blocks
-      const cookieOption = cookie ? `--add-header "Cookie: ${cookie}"` : '';
+      // Strip outer quotes from exe path if present (since execFile handles paths directly without shell quoting)
+      const cleanExe = exe.replace(/^"|"$/g, '');
 
-      // Execute command to dump meta-json
-      const { stdout } = await execAsync(`${exe} ${cookieOption} --dump-json "${url}"`);
+      const args: string[] = [];
+      if (cookie) {
+        args.push('--add-header', `Cookie: ${cookie}`);
+      }
+      args.push('--dump-json', url);
+
+      // Execute command to dump meta-json safely using execFile
+      const { stdout } = await execFileAsync(cleanExe, args);
       const data = JSON.parse(stdout);
 
       const media: MediaItem[] = [];
