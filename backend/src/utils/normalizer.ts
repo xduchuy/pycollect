@@ -1,7 +1,7 @@
 import { URL } from 'url';
 
 // Helper: Resolve hostnames to support platforms
-export function detectPlatform(url: string): 'instagram' | 'facebook' | 'tiktok' | 'unknown' {
+export function detectPlatform(url: string): 'instagram' | 'facebook' | 'tiktok' | 'youtube' | 'unknown' {
   try {
     const cleanUrl = url.toLowerCase().trim();
     const formattedUrl = cleanUrl.startsWith('http') ? cleanUrl : `https://${cleanUrl}`;
@@ -20,6 +20,12 @@ export function detectPlatform(url: string): 'instagram' | 'facebook' | 'tiktok'
     }
     if (host.includes('tiktok.com')) {
       return 'tiktok';
+    }
+    if (
+      host.includes('youtube.com') ||
+      host.includes('youtu.be')
+    ) {
+      return 'youtube';
     }
 
     return 'unknown';
@@ -54,6 +60,11 @@ export function normalizeURL(url: string, platform: string): string {
     } else if (platform === 'tiktok') {
       // Standardize vm.tiktok sharing and user videos
       normalized = parsed.origin + parsed.pathname;
+    } else if (platform === 'youtube') {
+      // For YouTube, retain the main query parameters (like v= for video ID)
+      const newUrl = new URL(parsed.toString());
+      trackingParams.forEach(param => newUrl.searchParams.delete(param));
+      normalized = newUrl.toString();
     }
 
     return normalized;

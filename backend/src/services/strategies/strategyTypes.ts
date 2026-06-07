@@ -20,5 +20,5 @@ export interface ExtractionResult {
 
 export interface ExtractionStrategy {
   name: string;
-  run(url: string): Promise<ExtractionResult>;
+  run(url: string, cookie?: string): Promise<ExtractionResult>;
 }

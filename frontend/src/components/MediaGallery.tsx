@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, Play, Image, Heart, MessageCircle, ArrowUpDown, QrCode, X } from 'lucide-react';
+import { ArrowLeft, Check, Play, Image, Heart, MessageCircle, ArrowUpDown, QrCode, X, Music } from 'lucide-react';
 import type { AnalysisResult, MediaItem } from '../types';
 
 interface MediaGalleryProps {
@@ -61,6 +61,13 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
           bg: 'bg-blue-400/10',
           border: 'border-blue-400/20',
           glow: 'shadow-blue-500/20',
+        };
+      case 'youtube':
+        return {
+          text: 'text-red-500',
+          bg: 'bg-red-500/10',
+          border: 'border-red-500/20',
+          glow: 'shadow-red-500/20',
         };
       default:
         return {
@@ -241,6 +248,7 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
       <div className="grid grid-cols-2 gap-3 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
         {sortedMedia.map((item, index) => {
           const isSelected = selectedIds.has(item.id);
+          const isAudio = item.filename.endsWith('.m4a') || item.filename.endsWith('.mp3') || item.id.endsWith('-audio');
           return (
             <div
               key={item.id}
@@ -271,14 +279,23 @@ export const MediaGallery: React.FC<MediaGalleryProps> = ({
                 className="w-full h-full object-cover group-hover:scale-105 transition-all duration-300"
               />
 
+              {/* Audio Overlay Visual */}
+              {isAudio && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <Music className="w-6 h-6 text-red-500/80 drop-shadow-md" />
+                </div>
+              )}
+
               {/* Media Type Badge */}
               <div className="absolute bottom-2 left-2 px-1.5 py-0.5 rounded bg-black/60 text-[8px] tracking-wider font-bold text-white flex items-center space-x-1">
-                {item.type === 'video' ? (
+                {isAudio ? (
+                  <Music className="w-2.5 h-2.5 text-red-400" />
+                ) : item.type === 'video' ? (
                   <Play className="w-2.5 h-2.5" />
                 ) : (
                   <Image className="w-2.5 h-2.5" />
                 )}
-                <span>{item.type.toUpperCase()}</span>
+                <span>{isAudio ? 'AUDIO' : item.type.toUpperCase()}</span>
               </div>
             </div>
           );

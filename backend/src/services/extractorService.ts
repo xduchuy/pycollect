@@ -35,19 +35,21 @@ export class ExtractorService {
         return [og, ytdl, pw, mock];
       case 'tiktok':
         return [ttApi, og, ytdl, pw, mock];
+      case 'youtube':
+        return [ytdl, mock];
       default:
         return [mock];
     }
   }
 
   // Core: Runs strategy execution waterfall
-  public static async extractWithFallback(url: string, platform: string): Promise<ExtractionResult> {
+  public static async extractWithFallback(url: string, platform: string, cookie?: string): Promise<ExtractionResult> {
     const strategies = this.getStrategies(platform);
 
     for (const strategy of strategies) {
       try {
         console.log(`[PIPELINE] Attempting strategy "${strategy.name}" for platform "${platform}"`);
-        const result = await strategy.run(url);
+        const result = await strategy.run(url, cookie);
         
         if (this.isValidMediaResult(result)) {
           console.log(`[PIPELINE] Strategy "${strategy.name}" succeeded!`);

@@ -22,6 +22,10 @@ body {
   background: radial-gradient(circle, rgba(255, 94, 0, 0.8) 0%, rgba(255, 140, 0, 0.3) 40%, transparent 70%);
   filter: blur(25px);
 }
+.glow-youtube {
+  background: radial-gradient(circle, rgba(255, 0, 0, 0.8) 0%, rgba(255, 50, 50, 0.3) 40%, transparent 70%);
+  filter: blur(25px);
+}
 
 /* Subtle border for the metric cards */
 .metric-card {

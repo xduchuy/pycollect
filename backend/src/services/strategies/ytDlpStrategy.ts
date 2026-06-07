@@ -19,13 +19,22 @@ export class YtDlpStrategy implements ExtractionStrategy {
       const data = JSON.parse(stdout);
 
       const media: MediaItem[] = [];
+      const isYoutube = data.extractor && data.extractor.toLowerCase().includes('youtube');
 
       if (data.entries && Array.isArray(data.entries)) {
         data.entries.forEach((entry: any, idx: number) => {
-          media.push(this.mapYtDlpItem(entry, `ytdl-${idx}`));
+          if (isYoutube) {
+            media.push(...this.mapYoutubeEntry(entry, `ytdl-${idx}`));
+          } else {
+            media.push(this.mapYtDlpItem(entry, `ytdl-${idx}`));
+          }
         });
       } else {
-        media.push(this.mapYtDlpItem(data, 'ytdl-1'));
+        if (isYoutube) {
+          media.push(...this.mapYoutubeEntry(data, 'ytdl-1'));
+        } else {
+          media.push(this.mapYtDlpItem(data, 'ytdl-1'));
+        }
       }
 
       return {
@@ -36,6 +45,88 @@ export class YtDlpStrategy implements ExtractionStrategy {
     } catch (e: any) {
       throw new Error(`yt-dlp Strategy failed: ${e.message}`);
     }
+  }
+
+  private mapYoutubeEntry(data: any, fallbackId: string): MediaItem[] {
+    const media: MediaItem[] = [];
+    const formats = data.formats || [];
+    const id = data.id || fallbackId;
+    const title = data.title || 'video';
+
+    // 1. Find best combined format (vcodec !== none and acodec !== none)
+    let bestCombined = null;
+    for (let i = formats.length - 1; i >= 0; i--) {
+      const f = formats[i];
+      if (f.vcodec && f.vcodec !== 'none' && f.acodec && f.acodec !== 'none' && f.url) {
+        bestCombined = f;
+        break;
+      }
+    }
+
+    const videoUrl = bestCombined?.url || data.url || '';
+    const videoSize = bestCombined?.filesize || bestCombined?.filesize_approx || data.filesize;
+
+    if (videoUrl) {
+      media.push({
+        id: `${id}-video`,
+        type: 'video',
+        thumbnailUrl: data.thumbnail || data.thumbnails?.[0]?.url || videoUrl,
+        downloadUrl: videoUrl,
+        filename: `${this.sanitizeFilename(title)}_${id}.mp4`,
+        size: videoSize 
+          ? Math.round((videoSize / (1024 * 1024)) * 10) / 10 
+          : 12.0
+      });
+    }
+
+    // 2. Find best audio format (vcodec === none and acodec !== none)
+    let bestAudio = null;
+    for (let i = formats.length - 1; i >= 0; i--) {
+      const f = formats[i];
+      if ((!f.vcodec || f.vcodec === 'none') && f.acodec && f.acodec !== 'none' && f.url && f.ext === 'm4a') {
+        bestAudio = f;
+        break;
+      }
+    }
+    if (!bestAudio) {
+      for (let i = formats.length - 1; i >= 0; i--) {
+        const f = formats[i];
+        if ((!f.vcodec || f.vcodec === 'none') && f.acodec && f.acodec !== 'none' && f.url) {
+          bestAudio = f;
+          break;
+        }
+      }
+    }
+
+    const audioUrl = bestAudio?.url || '';
+    const audioSize = bestAudio?.filesize || bestAudio?.filesize_approx;
+
+    if (audioUrl) {
+      media.push({
+        id: `${id}-audio`,
+        type: 'video', // must be 'video' due to types, but filename ends with .m4a
+        thumbnailUrl: data.thumbnail || data.thumbnails?.[0]?.url || audioUrl,
+        downloadUrl: audioUrl,
+        filename: `${this.sanitizeFilename(title)}_${id}_audio.m4a`,
+        size: audioSize 
+          ? Math.round((audioSize / (1024 * 1024)) * 10) / 10 
+          : 3.5
+      });
+    }
+
+    // Fallback if no video/audio was matched but we have direct URL
+    if (media.length === 0 && data.url) {
+      media.push({
+        id: id,
+        type: 'video',
+        thumbnailUrl: data.thumbnail || data.thumbnails?.[0]?.url || data.url,
+        downloadUrl: data.url,
+        filename: `${this.sanitizeFilename(title)}_${id}.mp4`,
+        size: data.filesize ? Math.round((data.filesize / (1024 * 1024)) * 10) / 10 : 12.0
+      });
+    }
+
+    return media;
   }
 
   private mapYtDlpItem(item: any, fallbackId: string): MediaItem {
@@ -65,6 +156,10 @@ export class YtDlpStrategy implements ExtractionStrategy {
         ? Math.round((item.filesize / (1024 * 1024)) * 10) / 10 
         : (isVideo ? 12.0 : 1.5) // Fallback default sizes
     };
+  }
+
+  private sanitizeFilename(str: string): string {
+    return str.replace(/[^a-zA-Z0-9_\-]/g, '_').substring(0, 50);
   }
 
   private capitalize(str: string): string {

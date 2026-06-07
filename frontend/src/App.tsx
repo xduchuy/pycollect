@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { LayoutGrid, Search, Clock, Bell, CheckSquare } from 'lucide-react';
+import { Search, Clock, Youtube, CheckSquare, Instagram } from 'lucide-react';
 import { Header } from './components/Header';
 import { UrlInput } from './components/UrlInput';
+import { YoutubeInput } from './components/YoutubeInput';
 import { MediaGallery } from './components/MediaGallery';
 import { StatsCards } from './components/StatsCards';
 import { PreviewModal } from './components/PreviewModal';
@@ -11,6 +12,7 @@ import type { AnalysisResult, MediaItem } from './types';
 
 export const App: React.FC = () => {
   // Application view/data states
+  const [activeTab, setActiveTab] = useState<'social' | 'youtube'>('social');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [analyzedUrl, setAnalyzedUrl] = useState<string>('');
@@ -47,10 +49,11 @@ export const App: React.FC = () => {
 
     const base = import.meta.env.DEV ? '' : '/_/backend';
     try {
+      const cookie = localStorage.getItem('mcollect_instagram_cookie') || '';
       const response = await fetch(`${base}/api/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, cookie }),
       });
 
       if (!response.ok) {
@@ -265,12 +268,27 @@ export const App: React.FC = () => {
           <div className="flex items-center space-x-6 text-gray-400 mx-auto">
             <Search className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
             <Clock className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-            <div className="bg-black/40 p-1.5 rounded-lg border border-white/[0.05]">
-              <LayoutGrid className="w-5 h-5 text-white" />
+            <div 
+              className={`p-1.5 rounded-lg border transition-all ${
+                activeTab === 'social'
+                  ? 'bg-black/40 border-white/[0.05] text-white'
+                  : 'border-transparent text-gray-400 hover:text-white cursor-pointer'
+              }`}
+              onClick={() => { setActiveTab('social'); handleBack(); }}
+              title="Social Downloader"
+            >
+              <Instagram className="w-5 h-5" />
             </div>
-            <div className="relative">
-              <Bell className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-              <span className="absolute top-0 right-0 w-2 h-2 bg-[#ff5e00] rounded-full border border-darkBg"></span>
+            <div 
+              className={`p-1.5 rounded-lg border transition-all ${
+                activeTab === 'youtube'
+                  ? 'bg-black/40 border-white/[0.05] text-white'
+                  : 'border-transparent text-gray-400 hover:text-white cursor-pointer'
+              }`}
+              onClick={() => { setActiveTab('youtube'); handleBack(); }}
+              title="YouTube Downloader"
+            >
+              <Youtube className="w-5 h-5" />
             </div>
             <CheckSquare className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
           </div>
@@ -280,7 +298,7 @@ export const App: React.FC = () => {
         <div className="p-5 sm:p-8 space-y-6 sm:space-y-8 relative overflow-hidden">
           
           {/* Glowing Ambient Backdrop Element */}
-          <div className="absolute -top-10 left-10 w-32 h-32 glow-sun pointer-events-none" data-purpose="decorative-glow"></div>
+          <div className={`absolute -top-10 left-10 w-32 h-32 pointer-events-none ${activeTab === 'youtube' ? 'glow-youtube' : 'glow-sun'}`} data-purpose="decorative-glow"></div>
 
           {/* Header Title Component */}
           <Header />
@@ -290,7 +308,11 @@ export const App: React.FC = () => {
             <div className="relative overflow-hidden flex flex-col justify-center transition-all duration-300">
               
               {!result && (
-                <UrlInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+                activeTab === 'youtube' ? (
+                  <YoutubeInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+                ) : (
+                  <UrlInput onAnalyze={handleAnalyze} isLoading={isLoading} />
+                )
               )}
 
               {!isLoading && result && (

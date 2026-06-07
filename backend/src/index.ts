@@ -36,7 +36,7 @@ const getReadableStream = (body: any): Readable => {
 // Endpoint: Analyze URL
 app.post('/api/analyze', async (req, res) => {
   try {
-    const { url } = req.body;
+    const { url, cookie } = req.body;
     if (!url) {
       return res.status(400).json({ error: 'URL is required' });
     }
@@ -44,7 +44,7 @@ app.post('/api/analyze', async (req, res) => {
     // 1. Detect platform
     const platform = detectPlatform(url);
     if (platform === 'unknown') {
-      return res.status(400).json({ error: 'Only Instagram, Facebook, and TikTok links are supported.' });
+      return res.status(400).json({ error: 'Only Instagram, Facebook, TikTok, and YouTube links are supported.' });
     }
 
     // 2. Normalize URL (stripping tracking variables)
@@ -63,7 +63,7 @@ app.post('/api/analyze', async (req, res) => {
     console.log(`[CACHE] Cache miss for key: ${cacheKey}. Scraping URL: ${normalizedUrl}`);
 
     // 5. Extract with multi-strategy fallbacks
-    const result = await ExtractorService.extractWithFallback(normalizedUrl, platform);
+    const result = await ExtractorService.extractWithFallback(normalizedUrl, platform, cookie);
 
     // 6. Cache the successful extraction for 30 minutes
     cache.set(cacheKey, result, 1800);

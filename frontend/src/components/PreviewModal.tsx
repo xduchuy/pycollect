@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { X, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Play, Pause, Volume2, VolumeX, Music } from 'lucide-react';
 import type { MediaItem } from '../types';
 
 interface PreviewModalProps {
@@ -178,124 +178,144 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
           {/* Media Player element */}
           <div key={item.id} className="w-full h-full flex items-center justify-center transition-all duration-300 select-none">
             {item.type === 'video' ? (
-              <div className="relative group/player max-w-full max-h-[65vh] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center bg-black">
-                <video 
-                  ref={videoRef}
-                  src={item.downloadUrl} 
-                  autoPlay 
-                  playsInline
-                  muted={isMuted}
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
-                  onTimeUpdate={() => {
-                    if (videoRef.current) {
-                      setCurrentTime(videoRef.current.currentTime);
-                    }
-                  }}
-                  onLoadedMetadata={() => {
-                    if (videoRef.current) {
-                      setDuration(videoRef.current.duration);
-                    }
-                  }}
-                  onClick={() => togglePlay()}
-                  className="max-w-full max-h-[65vh] object-contain cursor-pointer" 
-                />
-
-                {/* Big Center Overlay Play/Pause Button */}
-                <div 
-                  onClick={() => togglePlay()}
-                  className={`absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer transition-all duration-300 ${
-                    isPlaying ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'
-                  }`}
-                >
-                  <div className="p-4 rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 hover:scale-105 transition-all shadow-xl">
-                    <Play className="w-8 h-8 fill-white ml-0.5" />
-                  </div>
-                </div>
-
-                {/* Custom Neumorphic Bottom Control Bar */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover/player:opacity-100 transition-opacity duration-300 z-20">
-                  {/* Progress scrub bar */}
-                  <div className="flex items-center space-x-2">
-                    <input 
-                      type="range" 
-                      min={0} 
-                      max={duration || 100} 
-                      step={0.1}
-                      value={currentTime} 
-                      onChange={handleSeek} 
-                      className="w-full accent-[#00f2fe] h-1 rounded-lg bg-white/20 appearance-none cursor-pointer focus:outline-none transition-all" 
+              (() => {
+                const isAudio = item.filename.endsWith('.m4a') || item.filename.endsWith('.mp3') || item.id.endsWith('-audio');
+                return (
+                  <div className="relative group/player max-w-full max-h-[65vh] rounded-2xl overflow-hidden shadow-lg flex items-center justify-center bg-black w-full aspect-video border border-white/5">
+                    <video 
+                      ref={videoRef}
+                      src={item.downloadUrl} 
+                      autoPlay 
+                      playsInline
+                      muted={isMuted}
+                      onPlay={() => setIsPlaying(true)}
+                      onPause={() => setIsPlaying(false)}
+                      onTimeUpdate={() => {
+                        if (videoRef.current) {
+                          setCurrentTime(videoRef.current.currentTime);
+                        }
+                      }}
+                      onLoadedMetadata={() => {
+                        if (videoRef.current) {
+                          setDuration(videoRef.current.duration);
+                        }
+                      }}
+                      onClick={() => togglePlay()}
+                      className={`max-w-full max-h-[65vh] object-contain cursor-pointer ${isAudio ? 'hidden' : ''}`} 
                     />
-                  </div>
 
-                  {/* Controls Row */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      {/* Play/Pause control */}
-                      <button 
-                        type="button" 
-                        onClick={() => togglePlay()} 
-                        className="text-white hover:text-[#00f2fe] transition-colors p-1"
-                      >
-                        {isPlaying ? (
-                          <Pause className="w-4 h-4 fill-white" />
-                        ) : (
-                          <Play className="w-4 h-4 fill-white animate-pulse" />
-                        )}
-                      </button>
-
-                      {/* Sound Control */}
-                      <button 
-                        type="button" 
-                        onClick={toggleMute} 
-                        className="text-white hover:text-[#00f2fe] transition-colors p-1"
-                      >
-                        {isMuted ? (
-                          <VolumeX className="w-4 h-4" />
-                        ) : (
-                          <Volume2 className="w-4 h-4" />
-                        )}
-                      </button>
-
-                      {/* Time display */}
-                      <span className="text-[10px] text-gray-300 font-mono select-none">
-                        {formatTime(currentTime)} / {formatTime(duration)}
-                      </span>
-                    </div>
-
-                    {/* Speed selector popup */}
-                    <div className="relative">
-                      <button 
-                        type="button" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowSpeedMenu(!showSpeedMenu);
-                        }} 
-                        className="px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-md text-[9px] text-gray-300 font-bold uppercase tracking-wider transition-all"
-                      >
-                        {playbackRate}x
-                      </button>
-
-                      {showSpeedMenu && (
-                        <div className="absolute bottom-full right-0 mb-1 bg-zinc-950 border border-white/10 rounded-xl overflow-hidden py-1 w-16 shadow-2xl flex flex-col z-30">
-                          {([0.5, 1.0, 1.5, 2.0] as const).map((rate) => (
-                            <button
-                              key={rate}
-                              type="button"
-                              onClick={(e) => changeSpeed(e, rate)}
-                              className={`py-1 text-[9px] font-bold text-center hover:bg-white/5 transition-colors ${
-                                playbackRate === rate ? 'text-[#00f2fe]' : 'text-gray-400'
-                              }`}
-                            >
-                              {rate}x
-                            </button>
-                          ))}
+                    {isAudio && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 p-6 text-center select-none" onClick={() => togglePlay()}>
+                        {/* Blurred background thumbnail */}
+                        <img src={item.thumbnailUrl} alt="bg" className="absolute inset-0 w-full h-full object-cover blur-md opacity-20 pointer-events-none" />
+                        
+                        {/* Music Icon & info */}
+                        <div className="relative z-10 flex flex-col items-center space-y-3">
+                          <div className={`p-5 rounded-full bg-red-500/10 border border-red-500/25 text-red-500 shadow-lg ${isPlaying ? 'animate-pulse' : ''}`}>
+                            <Music className="w-10 h-10" />
+                          </div>
+                          <span className="text-[10px] text-red-400 font-bold uppercase tracking-widest bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full">Audio Track</span>
                         </div>
-                      )}
+                      </div>
+                    )}
+
+                    {/* Big Center Overlay Play/Pause Button */}
+                    <div 
+                      onClick={() => togglePlay()}
+                      className={`absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer transition-all duration-300 ${
+                        isPlaying ? 'opacity-0 pointer-events-none scale-110' : 'opacity-100 scale-100'
+                      }`}
+                    >
+                      <div className="p-4 rounded-full bg-black/60 text-white backdrop-blur-md border border-white/10 hover:scale-105 transition-all shadow-xl">
+                        <Play className="w-8 h-8 fill-white ml-0.5" />
+                      </div>
+                    </div>
+
+                    {/* Custom Neumorphic Bottom Control Bar */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/95 via-black/80 to-transparent flex flex-col space-y-2 opacity-100 md:opacity-0 md:group-hover/player:opacity-100 transition-opacity duration-300 z-20">
+                      {/* Progress scrub bar */}
+                      <div className="flex items-center space-x-2">
+                        <input 
+                          type="range" 
+                          min={0} 
+                          max={duration || 100} 
+                          step={0.1}
+                          value={currentTime} 
+                          onChange={handleSeek} 
+                          className="w-full accent-red-500 h-1 rounded-lg bg-white/20 appearance-none cursor-pointer focus:outline-none transition-all" 
+                        />
+                      </div>
+
+                      {/* Controls Row */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          {/* Play/Pause control */}
+                          <button 
+                            type="button" 
+                            onClick={() => togglePlay()} 
+                            className="text-white hover:text-red-500 transition-colors p-1"
+                          >
+                            {isPlaying ? (
+                              <Pause className="w-4 h-4 fill-white" />
+                            ) : (
+                              <Play className="w-4 h-4 fill-white animate-pulse" />
+                            )}
+                          </button>
+
+                          {/* Sound Control */}
+                          <button 
+                            type="button" 
+                            onClick={toggleMute} 
+                            className="text-white hover:text-red-500 transition-colors p-1"
+                          >
+                            {isMuted ? (
+                              <VolumeX className="w-4 h-4" />
+                            ) : (
+                              <Volume2 className="w-4 h-4" />
+                            )}
+                          </button>
+
+                          {/* Time display */}
+                          <span className="text-[10px] text-gray-300 font-mono select-none">
+                            {formatTime(currentTime)} / {formatTime(duration)}
+                          </span>
+                        </div>
+
+                        {/* Speed selector popup */}
+                        <div className="relative">
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowSpeedMenu(!showSpeedMenu);
+                            }} 
+                            className="px-2 py-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-md text-[9px] text-gray-300 font-bold uppercase tracking-wider transition-all"
+                          >
+                            {playbackRate}x
+                          </button>
+
+                          {showSpeedMenu && (
+                            <div className="absolute bottom-full right-0 mb-1 bg-zinc-950 border border-white/10 rounded-xl overflow-hidden py-1 w-16 shadow-2xl flex flex-col z-30">
+                              {([0.5, 1.0, 1.5, 2.0] as const).map((rate) => (
+                                <button
+                                  key={rate}
+                                  type="button"
+                                  onClick={(e) => changeSpeed(e, rate)}
+                                  className={`py-1 text-[9px] font-bold text-center hover:bg-white/5 transition-colors ${
+                                    playbackRate === rate ? 'text-red-500' : 'text-gray-400'
+                                  }`}
+                                >
+                                  {rate}x
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
+                );
+              })()
             ) : (
               <img 
                 src={item.thumbnailUrl} 
@@ -321,7 +341,14 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
         {/* Info Footer */}
         <div className="p-5 border-t border-white/5 bg-black/80 flex justify-between items-center">
           <div>
-            <h4 className="text-white text-xs font-semibold uppercase tracking-wider">{platform} {item.type}</h4>
+            {(() => {
+              const isAudio = item.filename.endsWith('.m4a') || item.filename.endsWith('.mp3') || item.id.endsWith('-audio');
+              return (
+                <h4 className="text-white text-xs font-semibold uppercase tracking-wider">
+                  {platform} {isAudio ? 'AUDIO' : item.type}
+                </h4>
+              );
+            })()}
             <p className="text-gray-500 text-[10px] mt-1 font-mono">{item.size.toFixed(1)} MB • {item.filename}</p>
           </div>
           <button 
