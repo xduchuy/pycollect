@@ -320,14 +320,12 @@ div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"] > div {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
+}
+.m-card.flex-row.pkg-card {
     height: 80px !important;
 }
-.m-card.flex-col {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    height: 68px !important;
-    gap: 4px !important;
+.m-card.flex-row.size-card {
+    height: 52px !important;
 }
 .m-card-left {
     display: flex !important;
@@ -348,17 +346,6 @@ div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"] > div {
     color: #888888 !important;
     font-size: 12px !important;
     font-family: 'JetBrains Mono', monospace !important;
-}
-.m-card-sub {
-    color: #888888 !important;
-    font-size: 10px !important;
-    letter-spacing: 1px !important;
-    font-weight: 600 !important;
-}
-.m-card-val {
-    color: #ffffff !important;
-    font-size: 18px !important;
-    font-weight: 700 !important;
 }
 
 /* Hộp thông báo của Streamlit */
@@ -585,7 +572,7 @@ def render_info_card(label, value, right_label=""):
     if right_label:
         # Dạng thẻ Download Package
         st.markdown(f"""
-        <div class="m-card flex-row">
+        <div class="m-card flex-row pkg-card">
             <div class="m-card-left">
                 <span class="m-card-dot">●</span>
                 <span class="m-card-title">{label.upper()}</span>
@@ -596,9 +583,12 @@ def render_info_card(label, value, right_label=""):
     else:
         # Dạng thẻ Size
         st.markdown(f"""
-        <div class="m-card flex-col">
-            <span class="m-card-sub">{label.upper()}</span>
-            <span class="m-card-val">{value}</span>
+        <div class="m-card flex-row size-card">
+            <div class="m-card-left">
+                <span class="m-card-dot">●</span>
+                <span class="m-card-title">{label.upper()}</span>
+            </div>
+            <div class="m-card-right">{value}</div>
         </div>
         """, unsafe_allow_html=True)
 
