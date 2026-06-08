@@ -97,11 +97,11 @@ footer {
 }
 .m-spark {
     color: #e8530a !important;
-    font-size: 14px !important;
+    font-size: 8px !important;
 }
 .m-subtitle {
     color: #e8530a !important;
-    font-size: 10px !important;
+    font-size: 8px !important;
     font-weight: 700 !important;
     letter-spacing: 2px !important;
     font-family: 'JetBrains Mono', monospace !important;
