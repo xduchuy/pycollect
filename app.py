@@ -4,6 +4,43 @@ import re
 import requests
 import yt_dlp
 import os
+import shutil
+
+# Thiết lập tài nguyên PWA cho iOS (Apple Web Clip)
+def setup_pwa():
+    try:
+        streamlit_dir = os.path.dirname(st.__file__)
+        static_dir = os.path.join(streamlit_dir, 'static')
+        
+        # 1. Sao chép favicon vào thư mục tĩnh của Streamlit
+        src_favicon = "favicon.png"
+        if os.path.exists(src_favicon):
+            shutil.copy(src_favicon, os.path.join(static_dir, "favicon.png"))
+            shutil.copy(src_favicon, os.path.join(static_dir, "apple-touch-icon.png"))
+            shutil.copy(src_favicon, os.path.join(static_dir, "apple-touch-icon-precomposed.png"))
+            
+        # 2. Tiêm thẻ meta và link vào index.html gốc của Streamlit
+        index_path = os.path.join(static_dir, 'index.html')
+        if os.path.exists(index_path):
+            with open(index_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            pwa_tags = (
+                '<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n'
+                '  <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">\n'
+                '  <meta name="apple-mobile-web-app-capable" content="yes">\n'
+                '  <meta name="apple-mobile-web-app-title" content="PyCollect">\n'
+                '  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
+            )
+            
+            if "apple-touch-icon" not in content:
+                content = content.replace("</head>", f"  {pwa_tags}\n</head>")
+                with open(index_path, 'w', encoding='utf-8') as f:
+                    f.write(content)
+    except Exception:
+        pass
+
+setup_pwa()
 
 # Cấu hình giao diện trang web
 st.set_page_config(
