@@ -65,6 +65,25 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
     color: #ffffff !important;
 }
 
+/* Hiệu ứng ửng cam phát sáng bên trái màn hình (Glow Blob) */
+.stApp::before {
+    content: "" !important;
+    position: fixed !important;
+    top: 60px !important;
+    left: -120px !important;
+    width: 320px !important;
+    height: 320px !important;
+    background: radial-gradient(circle, rgba(232, 83, 10, 0.22) 0%, rgba(180, 60, 10, 0.08) 50%, rgba(0, 0, 0, 0) 100%) !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+    animation: glowAnimation 12s infinite alternate ease-in-out !important;
+}
+
+@keyframes glowAnimation {
+    0% { transform: scale(0.9) translate(0px, 0px); opacity: 0.7; }
+    100% { transform: scale(1.1) translate(10px, 10px); opacity: 0.95; }
+}
+
 
 /* Ẩn hoàn toàn header mặc định, chân trang và thanh trang trí của Streamlit */
 header[data-testid="stHeader"], [data-testid="stHeader"], [data-testid="stDecoration"] {
