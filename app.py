@@ -15,8 +15,8 @@ st.set_page_config(
 # Thêm mã CSS tùy chỉnh để tái tạo giao diện PyCollect cao cấp
 st.markdown("""
 <style>
-/* Nạp font Outfit và Pixelify Sans từ Google */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Pixelify+Sans:wght@400;500;600;700&display=swap');
+/* Nạp font Outfit và Press Start 2P từ Google */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap');
 
 /* Áp dụng font và màu nền tối đặc trưng của PyCollect */
 html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
@@ -80,11 +80,11 @@ footer {
     text-align: left !important;
 }
 .m-title {
-    font-family: 'Pixelify Sans', sans-serif !important;
+    font-family: 'Press Start 2P', monospace !important;
     color: #ffffff !important;
-    font-size: 40px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.5px !important;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    letter-spacing: -1px !important;
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1.1 !important;
