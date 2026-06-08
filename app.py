@@ -136,6 +136,30 @@ div[data-testid="column"]:nth-child(2) {
     border-color: #444444 !important;
 }
 
+/* Buộc ô nhập link và nút dán nằm cùng một hàng ngang trên mobile */
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"] {
+    min-width: 0 !important;
+}
+
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:first-child {
+    flex: 1 1 auto !important;
+    width: auto !important;
+}
+
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:last-child {
+    flex: 0 0 auto !important;
+    width: auto !important;
+}
+
 /* Định dạng ô nhập liệu (QLineEdit) */
 div[data-testid="stTextInput"] [data-baseweb="input"] {
     border-radius: 14px !important;
