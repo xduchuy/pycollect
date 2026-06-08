@@ -1007,7 +1007,7 @@ with col_input:
     )
 with col_paste:
     st.markdown("""
-    <button onclick="pasteClipboard()" class="paste-btn">⎘</button>
+    <button type="button" onclick="pasteClipboard()" class="paste-btn">⎘</button>
     <script>
     function pasteClipboard() {
         var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -1375,7 +1375,7 @@ if 'xp_error_msg' in st.session_state and st.session_state.xp_error_msg:
                 <div class="xp-text">{error_msg}</div>
             </div>
             <div class="xp-actions">
-                <button onclick="document.getElementById('xp-alert').style.display='none'" class="xp-btn">OK</button>
+                <button type="button" onclick="document.getElementById('xp-alert').style.display='none'" class="xp-btn">OK</button>
             </div>
         </div>
     </div>
