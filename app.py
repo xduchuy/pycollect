@@ -593,7 +593,8 @@ hr {
 }
 
 /* Windows XP style alert popup */
-#xp-close-toggle:checked ~ .xp-overlay {
+#xp-close-toggle:checked ~ .xp-overlay,
+input[id^="xp-close-toggle-"]:checked ~ .xp-overlay {
     display: none !important;
 }
 .xp-overlay {
@@ -1377,23 +1378,25 @@ if st.session_state.media_cache is not None:
 
 # ── Hiển thị thông báo lỗi kiểu Windows XP ──
 if 'xp_error_msg' in st.session_state and st.session_state.xp_error_msg:
+    import random
+    rand_val = random.randint(0, 1000000)
     error_msg = st.session_state.xp_error_msg
     st.session_state.xp_error_msg = None
     
     st.markdown(f"""
-    <input type="checkbox" id="xp-close-toggle" style="display:none;">
+    <input type="checkbox" id="xp-close-toggle-{rand_val}" style="display:none;">
     <div id="xp-alert" class="xp-overlay">
         <div class="xp-window">
             <div class="xp-titlebar">
                 <span class="xp-title">Error</span>
-                <label for="xp-close-toggle" class="xp-close">✕</label>
+                <label for="xp-close-toggle-{rand_val}" class="xp-close">✕</label>
             </div>
             <div class="xp-body">
                 <div class="xp-icon"></div>
                 <div class="xp-text">{error_msg}</div>
             </div>
             <div class="xp-actions">
-                <label for="xp-close-toggle" class="xp-btn">OK</label>
+                <label for="xp-close-toggle-{rand_val}" class="xp-btn">OK</label>
             </div>
         </div>
     </div>
