@@ -591,6 +591,112 @@ hr {
 .m-dock-item.active .m-active-dot {
     opacity: 1 !important;
 }
+
+/* Windows XP style alert popup */
+.xp-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.xp-window {
+    width: 320px !important;
+    background-color: #ece9d8 !important;
+    border: 3px solid #0054e3 !important;
+    border-radius: 7px 7px 0 0 !important;
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.5) !important;
+    font-family: "Tahoma", "Segoe UI", sans-serif !important;
+    font-size: 11px !important;
+    color: #000000 !important;
+}
+.xp-titlebar {
+    background: linear-gradient(to right, #0058e6 0%, #3a93ff 100%) !important;
+    height: 25px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 5px 0 8px !important;
+    color: #ffffff !important;
+    font-weight: bold !important;
+    text-shadow: 1px 1px 1px #002c7a !important;
+}
+.xp-title {
+    font-size: 11px !important;
+}
+.xp-close {
+    width: 16px !important;
+    height: 16px !important;
+    background: linear-gradient(135deg, #ff7d63 0%, #e61d00 100%) !important;
+    border: 1px solid #7d0000 !important;
+    border-radius: 3px !important;
+    color: #ffffff !important;
+    font-size: 9px !important;
+    font-weight: bold !important;
+    line-height: 14px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    box-shadow: inset 1px 1px 1px rgba(255,255,255,0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.xp-close:hover {
+    background: linear-gradient(135deg, #ff9b85 0%, #ff3b1f 100%) !important;
+}
+.xp-body {
+    padding: 15px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 15px !important;
+    background-color: #ece9d8 !important;
+}
+.xp-icon {
+    width: 32px !important;
+    height: 32px !important;
+    flex-shrink: 0 !important;
+    background: url('https://upload.wikimedia.org/wikipedia/commons/e/e4/Windows_Error_Icon.svg') no-repeat center !important;
+    background-size: contain !important;
+}
+.xp-text {
+    line-height: 1.4 !important;
+    font-size: 12px !important;
+    font-family: "Tahoma", sans-serif !important;
+    color: #000000 !important;
+    word-break: break-word !important;
+    text-align: left !important;
+}
+.xp-actions {
+    display: flex !important;
+    justify-content: center !important;
+    padding-bottom: 12px !important;
+    background-color: #ece9d8 !important;
+}
+.xp-btn {
+    min-width: 75px !important;
+    height: 22px !important;
+    background-color: #f1efe2 !important;
+    border: 1px solid #0054e3 !important;
+    border-radius: 3px !important;
+    color: #000000 !important;
+    font-size: 11px !important;
+    font-family: "Tahoma", sans-serif !important;
+    cursor: pointer !important;
+    box-shadow: inset 0 -4px 4px #e5e2d3, 1px 1px 1px rgba(0,0,0,0.2) !important;
+    outline: none !important;
+}
+.xp-btn:hover {
+    background-color: #ffffff !important;
+    box-shadow: inset 0 -4px 4px #e5e2d3, 1px 1px 1px rgba(0,0,0,0.2), 0 0 2px #ffc000 !important;
+}
+.xp-btn:active {
+    box-shadow: inset 0 2px 2px rgba(0,0,0,0.1) !important;
+}
 </style>
 <script>
     (function() {
@@ -811,6 +917,8 @@ if 'prev_url' not in st.session_state:
     st.session_state.prev_url = ""
 if 'media_cache' not in st.session_state:
     st.session_state.media_cache = None
+if 'xp_error_msg' not in st.session_state:
+    st.session_state.xp_error_msg = None
 
 # ── HÀNH TRÌNH CHUYỂN TAB (Early Exit) ──
 active_tab = st.query_params.get("tab", "download")
@@ -1128,9 +1236,14 @@ def download_with_ytdlp(video_url, download_type="video"):
 # ─────────────────────────────────────────────
 #  Tiến trình trích xuất phương tiện thực tế
 # ─────────────────────────────────────────────
-if url and st.session_state.start_download and st.session_state.media_cache is None:
-    if not check_link_validity(url):
-        st.error("⚠️ Đường dẫn không đúng định dạng hoặc chưa được hỗ trợ!")
+if st.session_state.start_download and st.session_state.media_cache is None:
+    if not url:
+        st.session_state.xp_error_msg = "Bạn chưa nhập đường dẫn liên kết! Vui lòng dán link trước khi bắt đầu."
+        st.session_state.start_download = False
+        st.session_state.toggle_version = st.session_state.get("toggle_version", 0) + 1
+        st.rerun()
+    elif not check_link_validity(url):
+        st.session_state.xp_error_msg = "Đường dẫn không đúng định dạng hoặc không được hỗ trợ! Vui lòng kiểm tra lại."
         st.session_state.start_download = False
         st.session_state.toggle_version = st.session_state.get("toggle_version", 0) + 1
         st.rerun()
@@ -1244,4 +1357,28 @@ if url and st.session_state.start_download and st.session_state.media_cache is N
 # ─────────────────────────────────────────────
 if st.session_state.media_cache is not None:
     display_media_results(st.session_state.media_cache)
+
+# ── Hiển thị thông báo lỗi kiểu Windows XP ──
+if 'xp_error_msg' in st.session_state and st.session_state.xp_error_msg:
+    error_msg = st.session_state.xp_error_msg
+    st.session_state.xp_error_msg = None
+    
+    st.markdown(f"""
+    <div id="xp-alert" class="xp-overlay">
+        <div class="xp-window">
+            <div class="xp-titlebar">
+                <span class="xp-title">Error</span>
+                <div onclick="document.getElementById('xp-alert').style.display='none'" class="xp-close">✕</div>
+            </div>
+            <div class="xp-body">
+                <div class="xp-icon"></div>
+                <div class="xp-text">{error_msg}</div>
+            </div>
+            <div class="xp-actions">
+                <button onclick="document.getElementById('xp-alert').style.display='none'" class="xp-btn">OK</button>
+            </div>
+        </div>
+    </div>
+    <audio autoplay src="https://www.myinstants.com/media/sounds/windows-xp-error.mp3"></audio>
+    """, unsafe_allow_html=True)
 
