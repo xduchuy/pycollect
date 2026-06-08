@@ -266,7 +266,7 @@ div[data-testid="stCheckbox"] [role="switch"] > div,
 div[data-testid="stCheckbox"] [role="checkbox"] > div {
     width: 100px !important;
     height: 94px !important;
-    border-radius: 12px !important;
+    border-radius: 47px !important;
     background-color: #2a2a2a !important;
     box-shadow: 4px 4px 8px #101010, -2px -2px 6px #3c3c3c !important;
     border: none !important;
