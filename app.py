@@ -320,13 +320,13 @@ div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"] > div {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    height: 58px !important;
+    height: 80px !important;
 }
 .m-card.flex-col {
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    height: 70px !important;
+    height: 68px !important;
     gap: 4px !important;
 }
 .m-card-left {
