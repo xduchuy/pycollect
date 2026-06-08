@@ -1,9 +1,0 @@
-node_modules/
-dist/
-.env
-.vite/
-*.log
-backend/yt-dlp.exe
-backend/gallery-dl.exe
-backend/scratch-downloader/
-
