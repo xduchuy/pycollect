@@ -775,7 +775,6 @@ st.markdown("""
 <div class="m-title-container">
     <h1 class="m-title">PyCollect</h1>
     <div class="m-subtitle-row">
-        <span class="m-spark">✦</span>
         <span class="m-subtitle">DOWNLOAD THE THINGS YOU LIKE</span>
     </div>
 </div>
