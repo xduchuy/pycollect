@@ -593,6 +593,9 @@ hr {
 }
 
 /* Windows XP style alert popup */
+#xp-close-toggle:checked ~ .xp-overlay {
+    display: none !important;
+}
 .xp-overlay {
     position: fixed !important;
     top: 0 !important;
@@ -678,6 +681,12 @@ hr {
     background-color: #ece9d8 !important;
 }
 .xp-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+    user-select: none !important;
     min-width: 75px !important;
     height: 22px !important;
     background-color: #f1efe2 !important;
@@ -1007,7 +1016,7 @@ with col_input:
     )
 with col_paste:
     st.markdown("""
-    <button type="button" onclick="pasteClipboard()" class="paste-btn">⎘</button>
+    <button type="button" id="btn-paste" class="paste-btn">⎘</button>
     <script>
     function pasteClipboard() {
         var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -1070,6 +1079,14 @@ with col_paste:
             console.log('Clipboard access denied or not supported', err);
         });
     }
+    
+    // Gán sự kiện click động để tránh bộ lọc bảo mật st.markdown
+    setTimeout(function() {
+        var btnPaste = document.getElementById('btn-paste');
+        if (btnPaste) {
+            btnPaste.addEventListener('click', pasteClipboard);
+        }
+    }, 100);
     </script>
     """, unsafe_allow_html=True)
 
@@ -1364,18 +1381,19 @@ if 'xp_error_msg' in st.session_state and st.session_state.xp_error_msg:
     st.session_state.xp_error_msg = None
     
     st.markdown(f"""
+    <input type="checkbox" id="xp-close-toggle" style="display:none;">
     <div id="xp-alert" class="xp-overlay">
         <div class="xp-window">
             <div class="xp-titlebar">
                 <span class="xp-title">Error</span>
-                <div onclick="document.getElementById('xp-alert').style.display='none'" class="xp-close">✕</div>
+                <label for="xp-close-toggle" class="xp-close">✕</label>
             </div>
             <div class="xp-body">
                 <div class="xp-icon"></div>
                 <div class="xp-text">{error_msg}</div>
             </div>
             <div class="xp-actions">
-                <button type="button" onclick="document.getElementById('xp-alert').style.display='none'" class="xp-btn">OK</button>
+                <label for="xp-close-toggle" class="xp-btn">OK</label>
             </div>
         </div>
     </div>
