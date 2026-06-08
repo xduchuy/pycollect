@@ -130,7 +130,7 @@ footer {
 .m-title-container::before {
     content: "" !important;
     position: absolute !important;
-    top: -60px !important;
+    top: -90px !important;
     left: -50px !important;
     width: 280px !important;
     height: 280px !important;
