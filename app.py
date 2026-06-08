@@ -30,10 +30,20 @@ def setup_pwa():
                 '  <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png">\n'
                 '  <meta name="apple-mobile-web-app-capable" content="yes">\n'
                 '  <meta name="apple-mobile-web-app-title" content="PyCollect">\n'
-                '  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">'
+                '  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n'
+                '  <meta name="theme-color" content="#0d0d0d">'
             )
             
-            if "apple-touch-icon" not in content:
+            # Xóa các dòng tag đã tiêm trước đó để tránh trùng lặp
+            lines = content.split('\n')
+            clean_lines = []
+            for line in lines:
+                if any(x in line for x in ["apple-touch-icon", "apple-mobile-web-app", "theme-color", "msapplication-navbutton-color"]):
+                    continue
+                clean_lines.append(line)
+            content = '\n'.join(clean_lines)
+            
+            if "</head>" in content:
                 content = content.replace("</head>", f"  {pwa_tags}\n</head>")
                 with open(index_path, 'w', encoding='utf-8') as f:
                     f.write(content)
@@ -60,22 +70,27 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
     font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-.stApp {
+html, body, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"], .stApp {
     background-color: #0d0d0d !important;
     color: #ffffff !important;
 }
-
-
 
 @keyframes glowAnimation {
     0% { transform: scale(0.9) translate(0px, 0px); opacity: 0.7; }
     100% { transform: scale(1.1) translate(10px, 10px); opacity: 0.95; }
 }
 
+/* Loại bỏ khoảng trắng/padding ở trên cùng */
+[data-testid="stAppViewContainer"] > section.main {
+    padding-top: 0 !important;
+}
 
 /* Ẩn hoàn toàn header mặc định, chân trang và thanh trang trí của Streamlit */
 header[data-testid="stHeader"], [data-testid="stHeader"], [data-testid="stDecoration"] {
     display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 footer {
     display: none !important;
@@ -749,6 +764,14 @@ input[id^="xp-close-toggle-"]:checked ~ .xp-overlay {
             barStyle.name = 'apple-mobile-web-app-status-bar-style';
             barStyle.content = 'black-translucent';
             parentDoc.head.appendChild(barStyle);
+        }
+        
+        // 5. Theme color cho trình duyệt di động
+        if (!parentDoc.querySelector('meta[name="theme-color"]')) {
+            var themeColor = parentDoc.createElement('meta');
+            themeColor.name = 'theme-color';
+            themeColor.content = '#0d0d0d';
+            parentDoc.head.appendChild(themeColor);
         }
     })();
 </script>
