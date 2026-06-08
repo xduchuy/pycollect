@@ -434,12 +434,11 @@ hr {
     align-items: center !important;
     width: 100% !important;
     height: 52px !important;
-    background: #161616 !important;
+    background: #1a1a1a !important;
     border-radius: 26px !important;
     padding: 0 8px !important;
-    box-shadow: 4px 4px 8px #080808, -4px -4px 8px #222222,
-                inset 1px 1px 2px #222222, inset -1px -1px 2px #080808 !important;
-    border: 1px solid #1a1a1a !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid #2a2a2a !important;
 }
 
 .m-dock-item {
@@ -479,12 +478,9 @@ hr {
 /* Các thuộc tính CSS cho Tab đang hoạt động (Active) */
 .m-dock-item.active .m-dock-btn {
     background: #e8530a !important;
-    border: 1.5px solid #000000 !important;
     width: 36px !important;
     height: 36px !important;
-    transform: translateY(-5px) !important;
-    box-shadow: 0 6px 12px rgba(232, 83, 10, 0.4),
-                3px 3px 6px #080808, -2px -2px 4px #222222 !important;
+    box-shadow: 0 0 10px rgba(232, 83, 10, 0.5) !important;
 }
 
 .m-dock-item.active .m-dock-icon {
