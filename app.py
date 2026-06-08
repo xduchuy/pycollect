@@ -130,8 +130,8 @@ footer {
 .m-title-container::before {
     content: "" !important;
     position: absolute !important;
-    top: -90px !important;
-    left: -50px !important;
+    top: -170px !important;
+    left: -70px !important;
     width: 280px !important;
     height: 280px !important;
     background: radial-gradient(circle, rgba(232, 83, 10, 0.28) 0%, rgba(180, 60, 10, 0.08) 50%, rgba(0, 0, 0, 0) 100%) !important;
