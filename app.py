@@ -75,6 +75,7 @@ footer {
 
 /* Khối tiêu đề chính PyCollect */
 .m-title-container {
+    margin-top: 18px !important;
     margin-bottom: 28px !important;
     text-align: left !important;
 }
