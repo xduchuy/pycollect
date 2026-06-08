@@ -65,19 +65,7 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
     color: #ffffff !important;
 }
 
-/* Hiệu ứng ửng cam phát sáng bên trái màn hình (Glow Blob) */
-.stApp::before {
-    content: "" !important;
-    position: fixed !important;
-    top: 60px !important;
-    left: -120px !important;
-    width: 320px !important;
-    height: 320px !important;
-    background: radial-gradient(circle, rgba(232, 83, 10, 0.22) 0%, rgba(180, 60, 10, 0.08) 50%, rgba(0, 0, 0, 0) 100%) !important;
-    pointer-events: none !important;
-    z-index: 0 !important;
-    animation: glowAnimation 12s infinite alternate ease-in-out !important;
-}
+
 
 @keyframes glowAnimation {
     0% { transform: scale(0.9) translate(0px, 0px); opacity: 0.7; }
@@ -134,6 +122,23 @@ footer {
     margin-top: 18px !important;
     margin-bottom: 28px !important;
     text-align: left !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Hiệu ứng ửng cam phát sáng định vị chính xác theo tiêu đề (luôn hiện trên mobile) */
+.m-title-container::before {
+    content: "" !important;
+    position: absolute !important;
+    top: -60px !important;
+    left: -50px !important;
+    width: 280px !important;
+    height: 280px !important;
+    background: radial-gradient(circle, rgba(232, 83, 10, 0.28) 0%, rgba(180, 60, 10, 0.08) 50%, rgba(0, 0, 0, 0) 100%) !important;
+    pointer-events: none !important;
+    z-index: -1 !important;
+    filter: blur(10px) !important;
+    animation: glowAnimation 12s infinite alternate ease-in-out !important;
 }
 .m-title {
     font-family: 'Press Start 2P', monospace !important;
