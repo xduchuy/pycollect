@@ -818,8 +818,14 @@ with col_paste:
     <button onclick="pasteClipboard()" class="paste-btn">⎘</button>
     <script>
     function pasteClipboard() {
+        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        
         if (!navigator.clipboard || !navigator.clipboard.readText) {
-            alert("Trình duyệt không hỗ trợ dán tự động qua HTTP thường. Vui lòng nhấn Ctrl+V (hoặc Cmd+V) để dán.");
+            if (isIOS) {
+                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này do bảo mật. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
+            } else {
+                alert("Trình duyệt không hỗ trợ dán tự động qua HTTP thường. Vui lòng nhấn Ctrl+V (hoặc Cmd+V) để dán.");
+            }
             return;
         }
         navigator.clipboard.readText().then(text => {
@@ -864,7 +870,11 @@ with col_paste:
                 }
             });
         }).catch(err => {
-            alert("Không thể đọc clipboard. Hãy chắc chắn bạn đã sao chép link và cho phép trang web truy cập clipboard (nút ổ khóa cạnh URL trình duyệt -> cho phép Clipboard).");
+            if (isIOS) {
+                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này khi chạy qua khung Streamlit. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
+            } else {
+                alert("Không thể đọc clipboard. Hãy chắc chắn bạn đã sao chép link và cho phép trang web truy cập clipboard (nút ổ khóa cạnh URL trình duyệt -> cho phép Clipboard).");
+            }
             console.log('Clipboard access denied or not supported', err);
         });
     }
