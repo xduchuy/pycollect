@@ -194,56 +194,6 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
     font-family: 'JetBrains Mono', monospace !important;
 }
 
-/* Căn chỉnh cột cho nút dán link */
-div[data-testid="column"]:nth-child(2) {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-/* Nút dán clipboard (paste button) */
-.paste-btn {
-    background: #2a2a2a !important;
-    color: #ffffff !important;
-    border: 1px solid #2a2a2a !important;
-    border-radius: 14px !important;
-    font-size: 22px !important;
-    width: 58px !important;
-    height: 68px !important;
-    cursor: pointer !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin-top: 0px !important;
-    transition: all 0.2s ease !important;
-}
-.paste-btn:hover {
-    background: #3a3a3a !important;
-    color: #ffffff !important;
-    border-color: #444444 !important;
-}
-
-/* Buộc ô nhập link và nút dán nằm cùng một hàng ngang trên mobile */
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 8px !important;
-    width: 100% !important;
-}
-
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:first-child {
-    flex: 1 1 calc(100% - 66px) !important;
-    width: calc(100% - 66px) !important;
-    min-width: 0 !important;
-}
-
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:last-child {
-    flex: 0 0 58px !important;
-    width: 58px !important;
-    min-width: 58px !important;
-}
 
 /* Định dạng ô nhập liệu (QLineEdit) */
 div[data-testid="stTextInput"] [data-baseweb="base-input"],
@@ -954,90 +904,13 @@ if 'xp_error_msg' not in st.session_state:
     st.session_state.xp_error_msg = None
 
 
-# ── Thanh Nhập URL & Nút Clipboard ──
-col_input, col_paste = st.columns([5, 1], gap="small")
-with col_input:
-    url = st.text_input(
-        label="URL Input",
-        value=st.session_state.get("url_value", ""),
-        placeholder="Paste Instagram, Facebook, or TikTok link…",
-        label_visibility="collapsed"
-    )
-with col_paste:
-    st.markdown("""
-    <button type="button" id="btn-paste" class="paste-btn">⎘</button>
-    <script>
-    function pasteClipboard() {
-        var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        
-        if (!navigator.clipboard || !navigator.clipboard.readText) {
-            if (isIOS) {
-                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này do bảo mật. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
-            } else {
-                alert("Trình duyệt không hỗ trợ dán tự động qua HTTP thường. Vui lòng nhấn Ctrl+V (hoặc Cmd+V) để dán.");
-            }
-            return;
-        }
-        navigator.clipboard.readText().then(text => {
-            if (!text) {
-                alert("Bộ nhớ tạm (clipboard) của bạn đang trống!");
-                return;
-            }
-            let inputs = document.querySelectorAll('div[data-testid="stTextInput"] input');
-            if (inputs.length === 0 && window.parent) {
-                try {
-                    inputs = window.parent.document.querySelectorAll('div[data-testid="stTextInput"] input');
-                } catch(e) {}
-            }
-            if (inputs.length === 0) {
-                alert("Không tìm thấy ô nhập liên kết trên màn hình.");
-                return;
-            }
-            inputs.forEach(input => {
-                try {
-                    let obj = input;
-                    let desc = null;
-                    while (obj) {
-                        desc = Object.getOwnPropertyDescriptor(obj, "value");
-                        if (desc) break;
-                        obj = Object.getPrototypeOf(obj);
-                    }
-                    if (desc && desc.set) {
-                        desc.set.call(input, text);
-                    } else {
-                        input.value = text;
-                    }
-                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                    input.focus();
-                    input.blur();
-                } catch(innerErr) {
-                    input.value = text;
-                    input.dispatchEvent(new Event('input', { bubbles: true }));
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                    input.focus();
-                    input.blur();
-                }
-            });
-        }).catch(err => {
-            if (isIOS) {
-                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này khi chạy qua ứng dụng PyCollect. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
-            } else {
-                alert("Không thể đọc clipboard. Hãy chắc chắn bạn đã sao chép link và cho phép trang web truy cập clipboard (nút ổ khóa cạnh URL trình duyệt -> cho phép Clipboard).");
-            }
-            console.log('Clipboard access denied or not supported', err);
-        });
-    }
-    
-    // Gán sự kiện click động để tránh bộ lọc bảo mật st.markdown
-    setTimeout(function() {
-        var btnPaste = document.getElementById('btn-paste');
-        if (btnPaste) {
-            btnPaste.addEventListener('click', pasteClipboard);
-        }
-    }, 100);
-    </script>
-    """, unsafe_allow_html=True)
+# ── Thanh Nhập URL ──
+url = st.text_input(
+    label="URL Input",
+    value=st.session_state.get("url_value", ""),
+    placeholder="Paste Instagram, Facebook, or TikTok link…",
+    label_visibility="collapsed"
+)
 
 # Kiểm tra định dạng link và áp dụng giao diện cảnh báo đỏ nếu sai định dạng
 if url and not check_link_validity(url):
