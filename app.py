@@ -294,7 +294,8 @@ div[data-testid="stTextInput"] input:-webkit-autofill:active {
 
 
 /* Tùy chỉnh công tắc Neumorphic Toggle (theo Tkinter Neumorphic) */
-div.stCheckbox, div[data-testid="stCheckbox"], div[data-testid="stToggle"] {
+div.stCheckbox, div[data-testid="stCheckbox"], div[data-testid="stToggle"],
+div[data-testid="stCheckbox"] > div, div[data-testid="stToggle"] > div {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -303,7 +304,8 @@ div.stCheckbox, div[data-testid="stCheckbox"], div[data-testid="stToggle"] {
     width: 100% !important;
 }
 
-div[data-testid="stCheckbox"] > label, div[data-testid="stToggle"] > label {
+div[data-testid="stCheckbox"] label, div[data-testid="stToggle"] label,
+div.stCheckbox label {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
