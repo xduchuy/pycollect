@@ -1,5 +1,6 @@
 [server]
 runOnSave = true
+maxMessageSize = 2048
 
 [client]
 toolbarMode = "minimal"

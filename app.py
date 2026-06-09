@@ -1053,12 +1053,14 @@ def download_with_ytdlp(video_url, download_type="video"):
         ydl_opts = {
             'format': 'm4a/bestaudio/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
+            'restrictfilenames': True,
             'quiet': True,
         }
     else:
         ydl_opts = {
             'format': 'best[[ext=mp4]]/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
+            'restrictfilenames': True,
             'quiet': True,
         }
         
