@@ -100,13 +100,6 @@ footer {
     display: none !important;
 }
 
-/* Ẩn hoàn toàn container của text input chuyển tab ẩn */
-div[data-testid="stTextInput"]:has(input[aria-label="active_tab_hidden"]) {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
 
 /* Giới hạn kích thước container tối đa phù hợp Mobile */
 .block-container {
@@ -120,33 +113,6 @@ div[data-testid="stTextInput"]:has(input[aria-label="active_tab_hidden"]) {
     box-sizing: border-box !important;
 }
 
-/* Thanh điều hướng Navbar PyCollect */
-.m-navbar {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    gap: 12px !important;
-    height: 52px !important;
-    margin-bottom: 20px !important;
-    z-index: 10 !important;
-}
-.m-nav-item {
-    font-size: 17px !important;
-    color: #888888 !important;
-    width: 40px !important;
-    height: 40px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-.m-nav-item.active {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border-radius: 10px !important;
-    font-size: 16px !important;
-}
 
 /* Khối tiêu đề chính PyCollect */
 .m-title-container {
@@ -577,97 +543,6 @@ hr {
     margin: 20px 0 !important;
 }
 
-/* ── THÀNH PHẦN DOCK NEUMORPHIC CHO NAVIGATION ── */
-.m-dock-container {
-    display: flex !important;
-    justify-content: center !important;
-    width: 100% !important;
-    margin-top: -12px !important;
-    margin-bottom: 20px !important;
-    position: relative !important;
-}
-
-.m-dock {
-    display: flex !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    width: 100% !important;
-    height: 52px !important;
-    background: #1a1a1a !important;
-    border-radius: 26px !important;
-    padding: 0 8px !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35) !important;
-    border: 1px solid #2a2a2a !important;
-}
-
-.m-dock-item {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: relative !important;
-    cursor: pointer !important;
-    width: 38px !important;
-    height: 100% !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    outline: none !important;
-}
-
-.m-dock-btn {
-    width: 30px !important;
-    height: 30px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-    background: transparent !important;
-}
-
-.m-dock-icon {
-    font-size: 14px !important;
-    color: #888888 !important;
-    transition: all 0.3s ease !important;
-}
-
-/* Hiệu ứng di chuột cho các tab không hoạt động */
-.m-dock-item:not(.active):hover .m-dock-icon {
-    color: #ffffff !important;
-    transform: scale(1.1) !important;
-}
-
-/* Các thuộc tính CSS cho Tab đang hoạt động (Active) */
-.m-dock-item.active .m-dock-btn {
-    background: #e8530a !important;
-    width: 36px !important;
-    height: 36px !important;
-    box-shadow: 0 0 10px rgba(232, 83, 10, 0.5) !important;
-}
-
-.m-dock-item.active .m-dock-icon {
-    color: #ffffff !important;
-    font-size: 16px !important;
-}
-
-
-
-/* Dấu chấm chỉ báo phía dưới tab active */
-.m-active-dot {
-    width: 4px !important;
-    height: 4px !important;
-    border-radius: 50% !important;
-    background-color: #e8530a !important;
-    position: absolute !important;
-    bottom: 2px !important;
-    opacity: 0 !important;
-    transition: all 0.3s ease !important;
-}
-
-.m-dock-item.active .m-active-dot {
-    opacity: 1 !important;
-}
 
 /* Windows XP style alert popup */
 #xp-close-toggle:checked ~ .xp-overlay,
@@ -1029,111 +904,6 @@ def display_media_results(cache):
             )
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ── Vẽ thanh Navbar trên cùng (Neumorphic Dock 5 nút) ──
-# Lấy hoặc khởi tạo tab từ query params
-query_tab = st.query_params.get("tab", "download")
-if "active_tab" not in st.session_state or st.session_state.get("last_query_tab") != query_tab:
-    st.session_state.active_tab = query_tab
-    st.session_state.last_query_tab = query_tab
-
-# Text input ẩn dùng để chuyển tab mượt mà qua WebSocket
-active_tab_hidden = st.text_input(
-    label="active_tab_hidden",
-    value=st.session_state.active_tab,
-    label_visibility="collapsed"
-)
-
-if active_tab_hidden != st.session_state.active_tab:
-    st.session_state.active_tab = active_tab_hidden
-    st.session_state.last_query_tab = active_tab_hidden
-    st.query_params["tab"] = active_tab_hidden
-    st.rerun()
-
-active_tab = st.session_state.active_tab
-
-st.markdown(f"""
-<div class="m-dock-container">
-    <div class="m-dock">
-        <button type="button" id="tab-btn-download" class="m-dock-item {"active" if active_tab == "download" else ""}">
-            <div class="m-dock-btn">
-                <span class="m-dock-icon">📥</span>
-            </div>
-            <div class="m-active-dot"></div>
-        </button>
-        <button type="button" id="tab-btn-history" class="m-dock-item {"active" if active_tab == "history" else ""}">
-            <div class="m-dock-btn">
-                <span class="m-dock-icon">🕐</span>
-            </div>
-            <div class="m-active-dot"></div>
-        </button>
-        <button type="button" id="tab-btn-gallery" class="m-dock-item {"active" if active_tab == "gallery" else ""}">
-            <div class="m-dock-btn">
-                <span class="m-dock-icon">🖼️</span>
-            </div>
-            <div class="m-active-dot"></div>
-        </button>
-        <button type="button" id="tab-btn-settings" class="m-dock-item {"active" if active_tab == "settings" else ""}">
-            <div class="m-dock-btn">
-                <span class="m-dock-icon">⚙️</span>
-            </div>
-            <div class="m-active-dot"></div>
-        </button>
-        <button type="button" id="tab-btn-help" class="m-dock-item {"active" if active_tab == "help" else ""}">
-            <div class="m-dock-btn">
-                <span class="m-dock-icon">ℹ️</span>
-            </div>
-            <div class="m-active-dot"></div>
-        </button>
-    </div>
-</div>
-
-<script>
-(function() {{
-    function switchTab(tabName) {{
-        let inputs = document.querySelectorAll('input[aria-label="active_tab_hidden"]');
-        if (inputs.length === 0 && window.parent) {{
-            try {{
-                inputs = window.parent.document.querySelectorAll('input[aria-label="active_tab_hidden"]');
-            }} catch(e) {{}}
-        }}
-        inputs.forEach(input => {{
-            try {{
-                let obj = input;
-                let desc = null;
-                while (obj) {{
-                    desc = Object.getOwnPropertyDescriptor(obj, "value");
-                    if (desc) break;
-                    obj = Object.getPrototypeOf(obj);
-                }}
-                if (desc && desc.set) {{
-                    desc.set.call(input, tabName);
-                }} else {{
-                    input.value = tabName;
-                }}
-                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                input.dispatchEvent(new Event('change', {{ bubbles: true }}));
-                input.focus();
-                input.blur();
-            }} catch(e) {{
-                console.error("Error setting tab value", e);
-            }}
-        }});
-    }}
-    
-    setTimeout(function() {{
-        var tabs = ['download', 'history', 'gallery', 'settings', 'help'];
-        tabs.forEach(function(tab) {{
-            var btn = document.getElementById('tab-btn-' + tab);
-            if (btn) {{
-                btn.addEventListener('click', function() {{
-                    switchTab(tab);
-                }});
-            }}
-        }});
-    }}, 100);
-}})();
-</script>
-""", unsafe_allow_html=True)
 
 # ── Vẽ Khối Tiêu đề chính ──
 st.markdown("""
@@ -1155,81 +925,6 @@ if 'media_cache' not in st.session_state:
 if 'xp_error_msg' not in st.session_state:
     st.session_state.xp_error_msg = None
 
-# ── HÀNH TRÌNH CHUYỂN TAB (Early Exit) ──
-active_tab = st.session_state.active_tab
-if active_tab != "download":
-    if active_tab == "history":
-        st.subheader("Lịch sử phân tích")
-        if 'history' not in st.session_state or not st.session_state.history:
-            st.info("Chưa có lịch sử phân tích. Hãy tải video đầu tiên!")
-        else:
-            for idx, item in enumerate(reversed(st.session_state.history)):
-                st.markdown(f"""
-                <div class="m-card flex-col" style="height: auto; padding: 14px; margin-bottom: 12px;">
-                    <div class="m-card-left" style="margin-bottom: 6px;">
-                        <span class="m-card-dot">●</span>
-                        <span class="m-card-title" style="word-break: break-all;">{item['title']}</span>
-                    </div>
-                    <div class="m-card-sub" style="font-family: monospace; font-size: 10px; word-break: break-all; color: #888888;">
-                        {item['url']}
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                if st.button("Phân tích lại", key=f"re_analyze_{idx}"):
-                    st.session_state.url_value = item['url']
-                    st.session_state.prev_url = "" # Force reload
-                    st.query_params["tab"] = "download"
-                    st.rerun()
-                st.write("")
-                
-    elif active_tab == "gallery":
-        st.subheader("Bộ sưu tập tạm thời")
-        if st.session_state.media_cache is None:
-            st.info("Chưa có phương tiện trong bộ sưu tập. Hãy phân tích đường dẫn trước!")
-        else:
-            display_media_results(st.session_state.media_cache)
-            
-    elif active_tab == "settings":
-        st.subheader("Cài đặt")
-        format_choice = st.radio(
-            "Định dạng mặc định cho YouTube:", 
-            ("Video (MP4)", "Âm thanh (M4A)"),
-            horizontal=True,
-            index=0 if st.session_state.get("yt_format", "video") == "video" else 1
-        )
-        st.session_state.yt_format = "audio" if format_choice == "Âm thanh (M4A)" else "video"
-        
-        st.write("---")
-        if st.button("Xóa bộ nhớ đệm (Clear Cache)"):
-            st.session_state.media_cache = None
-            st.session_state.start_download = False
-            st.session_state.toggle_version = st.session_state.get("toggle_version", 0) + 1
-            st.session_state.history = []
-            st.success("Đã xóa sạch bộ nhớ tạm thời!")
-            st.rerun()
-            
-    elif active_tab == "help":
-        st.subheader("Hướng dẫn sử dụng")
-        st.markdown("""
-        <div class="m-card flex-col" style="height: auto; padding: 16px; margin-bottom: 12px;">
-            <span class="m-card-title">📱 TẢI TỪ INSTAGRAM</span>
-            <p style="font-size: 11px; color: #888888; margin: 4px 0 0 0;">
-                1. Mở bài viết hoặc Reels trên Instagram.<br>
-                2. Bấm nút Chia sẻ (Share) -> Sao chép liên kết (Copy Link).<br>
-                3. Dán vào ô nhập liệu và gạt công tắc <b>ANALYZE LINK</b>.
-            </p>
-        </div>
-        <div class="m-card flex-col" style="height: auto; padding: 16px; margin-bottom: 12px;">
-            <span class="m-card-title">🎥 TẢI TỪ YOUTUBE / TIKTOK / FB</span>
-            <p style="font-size: 11px; color: #888888; margin: 4px 0 0 0;">
-                1. Sao chép link video/Shorts của YouTube, video TikTok hoặc Facebook.<br>
-                2. Dán link và gạt công tắc để phân tích.<br>
-                3. Chọn định dạng Audio/Video mong muốn trong phần cài đặt.
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    st.stop()
 
 # ── Thanh Nhập URL & Nút Clipboard ──
 col_input, col_paste = st.columns([5, 1], gap="small")
