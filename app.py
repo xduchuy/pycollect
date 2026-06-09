@@ -43,6 +43,14 @@ def setup_pwa():
                 clean_lines.append(line)
             content = '\n'.join(clean_lines)
             
+            # Chuẩn hóa viewport chống trượt ngang và khóa zoom trên mobile
+            content = re.sub(
+                r'<meta\s+name=["\']viewport["\']\s+content=["\'][^"\']*["\']\s*/?>',
+                '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">',
+                content,
+                flags=re.IGNORECASE | re.DOTALL
+            )
+            
             if "</head>" in content:
                 content = content.replace("</head>", f"  {pwa_tags}\n</head>")
                 with open(index_path, 'w', encoding='utf-8') as f:
@@ -62,6 +70,11 @@ st.set_page_config(
 # Thêm mã CSS tùy chỉnh để tái tạo giao diện PyCollect cao cấp
 st.markdown("""
 <style>
+/* Reset box-sizing toàn cục và chặn trượt ngang hoàn toàn */
+*, *:before, *:after {
+    box-sizing: border-box !important;
+}
+
 /* Nạp font Outfit và Press Start 2P từ Google */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Press+Start+2P&display=swap');
 
@@ -75,7 +88,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockCont
     color: #ffffff !important;
     overflow-x: hidden !important;
     width: 100% !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
     touch-action: pan-y !important;
 }
 
@@ -101,7 +114,7 @@ footer {
 }
 
 
-/* Giới hạn kích thước container tối đa phù hợp Mobile */
+/* Giới hạn kích thước container tối đa phù hợp Mobile và chặn trượt ngang tuyệt đối */
 .block-container {
     max-width: 360px !important;
     width: 100% !important;
@@ -111,6 +124,8 @@ footer {
     padding-right: 12px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    position: relative !important;
 }
 
 
@@ -553,8 +568,8 @@ input[id^="xp-close-toggle-"]:checked ~ .xp-overlay {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
+    right: 0 !important;
+    bottom: 0 !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
     z-index: 99999 !important;
     display: flex !important;
