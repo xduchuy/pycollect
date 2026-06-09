@@ -223,6 +223,11 @@ div[data-testid="stTextInput"] input {
     box-shadow: none !important;
     caret-color: #ffffff !important; /* Con trỏ soạn thảo màu trắng */
 }
+div[data-testid="stTextInput"] input::placeholder {
+    color: #555555 !important;
+    -webkit-text-fill-color: #555555 !important; /* Làm chữ gợi ý mờ đi trên iOS */
+    opacity: 1 !important;
+}
 
 /* Đè màu tự động điền (autofill) của Chrome/Safari trên di động */
 div[data-testid="stTextInput"] input:-webkit-autofill,
@@ -908,7 +913,7 @@ if 'xp_error_msg' not in st.session_state:
 url = st.text_input(
     label="URL Input",
     value=st.session_state.get("url_value", ""),
-    placeholder="",
+    placeholder="Paste Instagram, Facebook, or TikTok link…",
     label_visibility="collapsed"
 )
 
