@@ -73,6 +73,10 @@ html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
 html, body, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"], .stApp {
     background-color: #0d0d0d !important;
     color: #ffffff !important;
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    touch-action: pan-y !important;
 }
 
 @keyframes glowAnimation {
@@ -107,9 +111,13 @@ div[data-testid="stTextInput"]:has(input[aria-label="active_tab_hidden"]) {
 /* Giới hạn kích thước container tối đa phù hợp Mobile */
 .block-container {
     max-width: 360px !important;
+    width: 100% !important;
     padding-top: 1.5rem !important;
     padding-bottom: 2rem !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
     margin: 0 auto !important;
+    box-sizing: border-box !important;
 }
 
 /* Thanh điều hướng Navbar PyCollect */
