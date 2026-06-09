@@ -124,7 +124,7 @@ footer {
     padding-right: 12px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
-    overflow: hidden !important; /* Ngăn chặn tuyệt đối các phần tử con tràn ra gây trượt ngang */
+    overflow-x: hidden !important; /* Ngăn chặn tuyệt đối các phần tử con tràn ra gây trượt ngang */
 }
 
 /* Đảm bảo khối dòng ngang st.columns không gây tràn lề */
@@ -1054,6 +1054,11 @@ def download_with_ytdlp(video_url, download_type="video"):
             'format': 'm4a/bestaudio/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
             'restrictfilenames': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['default', '-android_sdkless']
+                }
+            },
             'quiet': True,
         }
     else:
@@ -1061,6 +1066,11 @@ def download_with_ytdlp(video_url, download_type="video"):
             'format': 'best[[ext=mp4]]/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
             'restrictfilenames': True,
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['default', '-android_sdkless']
+                }
+            },
             'quiet': True,
         }
         
