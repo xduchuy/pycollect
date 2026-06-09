@@ -294,15 +294,16 @@ div[data-testid="stTextInput"] input:-webkit-autofill:active {
 
 
 /* Tùy chỉnh công tắc Neumorphic Toggle (theo Tkinter Neumorphic) */
-div.stCheckbox, div[data-testid="stCheckbox"] {
+div.stCheckbox, div[data-testid="stCheckbox"], div[data-testid="stToggle"] {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
+    align-self: center !important; /* Đảm bảo căn giữa chính nó trong flex layout */
     margin: 20px auto !important;
     width: 100% !important;
 }
 
-div[data-testid="stCheckbox"] > label {
+div[data-testid="stCheckbox"] > label, div[data-testid="stToggle"] > label {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -313,7 +314,7 @@ div[data-testid="stCheckbox"] > label {
 }
 
 /* Ẩn input checkbox mặc định */
-div[data-testid="stCheckbox"] input[type="checkbox"] {
+div[data-testid="stCheckbox"] input[type="checkbox"], div[data-testid="stToggle"] input[type="checkbox"] {
     position: absolute !important;
     width: 1px !important;
     height: 1px !important;
@@ -325,7 +326,7 @@ div[data-testid="stCheckbox"] input[type="checkbox"] {
 }
 
 /* Loại bỏ style mặc định của container checkbox trong Streamlit */
-div[data-testid="stCheckbox"] [data-baseweb="checkbox"] {
+div[data-testid="stCheckbox"] [data-baseweb="checkbox"], div[data-testid="stToggle"] [data-baseweb="checkbox"] {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -338,14 +339,18 @@ div[data-testid="stCheckbox"] [data-baseweb="checkbox"] {
 }
 
 /* Ẩn label text mặc định của BaseWeb checkbox nếu có */
-div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:last-child {
+div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:last-child,
+div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:last-child {
     display: none !important;
 }
 
 /* Rãnh trượt (Track) */
 div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child,
 div[data-testid="stCheckbox"] [role="switch"],
-div[data-testid="stCheckbox"] [role="checkbox"] {
+div[data-testid="stCheckbox"] [role="checkbox"],
+div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child,
+div[data-testid="stToggle"] [role="switch"],
+div[data-testid="stToggle"] [role="checkbox"] {
     width: 220px !important;
     height: 110px !important;
     background: #212121 !important;
@@ -361,7 +366,10 @@ div[data-testid="stCheckbox"] [role="checkbox"] {
 /* Điểm phát sáng xanh lá (Indicator Dot) ở bên trái */
 div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child::before,
 div[data-testid="stCheckbox"] [role="switch"]::before,
-div[data-testid="stCheckbox"] [role="checkbox"]::before {
+div[data-testid="stCheckbox"] [role="checkbox"]::before,
+div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child::before,
+div[data-testid="stToggle"] [role="switch"]::before,
+div[data-testid="stToggle"] [role="checkbox"]::before {
     content: "" !important;
     position: absolute !important;
     left: 30px !important;
@@ -392,14 +400,20 @@ div[data-testid="stCheckbox"] [role="checkbox"]::before {
 /* Khi được bật (checked) */
 div[data-testid="stCheckbox"]:has(input:checked) [data-baseweb="checkbox"] > div:first-child::before,
 div[data-testid="stCheckbox"]:has(input:checked) [role="switch"]::before,
-div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"]::before {
+div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"]::before,
+div[data-testid="stToggle"]:has(input:checked) [data-baseweb="checkbox"] > div:first-child::before,
+div[data-testid="stToggle"]:has(input:checked) [role="switch"]::before,
+div[data-testid="stToggle"]:has(input:checked) [role="checkbox"]::before {
     opacity: 1 !important;
 }
 
 /* Con chạy (Handle) */
 div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child > div,
 div[data-testid="stCheckbox"] [role="switch"] > div,
-div[data-testid="stCheckbox"] [role="checkbox"] > div {
+div[data-testid="stCheckbox"] [role="checkbox"] > div,
+div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child > div,
+div[data-testid="stToggle"] [role="switch"] > div,
+div[data-testid="stToggle"] [role="checkbox"] > div {
     width: 100px !important;
     height: 94px !important;
     border-radius: 47px !important;
@@ -416,7 +430,10 @@ div[data-testid="stCheckbox"] [role="checkbox"] > div {
 /* Rãnh dọc trên con chạy */
 div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child > div::after,
 div[data-testid="stCheckbox"] [role="switch"] > div::after,
-div[data-testid="stCheckbox"] [role="checkbox"] > div::after {
+div[data-testid="stCheckbox"] [role="checkbox"] > div::after,
+div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child > div::after,
+div[data-testid="stToggle"] [role="switch"] > div::after,
+div[data-testid="stToggle"] [role="checkbox"] > div::after {
     content: "" !important;
     position: absolute !important;
     right: 20px !important;
@@ -430,7 +447,10 @@ div[data-testid="stCheckbox"] [role="checkbox"] > div::after {
 /* Di chuyển con chạy sang phải khi bật */
 div[data-testid="stCheckbox"]:has(input:checked) [data-baseweb="checkbox"] > div:first-child > div,
 div[data-testid="stCheckbox"]:has(input:checked) [role="switch"] > div,
-div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"] > div {
+div[data-testid="stCheckbox"]:has(input:checked) [role="checkbox"] > div,
+div[data-testid="stToggle"]:has(input:checked) [data-baseweb="checkbox"] > div:first-child > div,
+div[data-testid="stToggle"]:has(input:checked) [role="switch"] > div,
+div[data-testid="stToggle"]:has(input:checked) [role="checkbox"] > div {
     transform: translateX(96px) !important;
 }
 
@@ -1306,7 +1326,10 @@ if url and not check_link_validity(url):
     /* Viền đỏ cho toggle */
     div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child,
     div[data-testid="stCheckbox"] [role="switch"],
-    div[data-testid="stCheckbox"] [role="checkbox"] {
+    div[data-testid="stCheckbox"] [role="checkbox"],
+    div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child,
+    div[data-testid="stToggle"] [role="switch"],
+    div[data-testid="stToggle"] [role="checkbox"] {
         border-color: #ef4444 !important;
         box-shadow: inset 3px 3px 6px #101010, inset -3px -3px 6px #282828,
                     0 0 10px rgba(239, 68, 68, 0.4) !important;
@@ -1314,7 +1337,10 @@ if url and not check_link_validity(url):
     /* Chấm đỏ phát sáng nhấp nháy */
     div[data-testid="stCheckbox"] [data-baseweb="checkbox"] > div:first-child::before,
     div[data-testid="stCheckbox"] [role="switch"]::before,
-    div[data-testid="stCheckbox"] [role="checkbox"]::before {
+    div[data-testid="stCheckbox"] [role="checkbox"]::before,
+    div[data-testid="stToggle"] [data-baseweb="checkbox"] > div:first-child::before,
+    div[data-testid="stToggle"] [role="switch"]::before,
+    div[data-testid="stToggle"] [role="checkbox"]::before {
         background-color: #ef4444 !important;
         box-shadow: 0 0 8px #dc2626, 0 0 16px #991b1b, 0 0 24px #7f1d1d !important;
         animation: pulseRedGlow 1.5s infinite alternate ease-in-out !important;
