@@ -124,8 +124,22 @@ footer {
     padding-right: 12px !important;
     margin: 0 auto !important;
     box-sizing: border-box !important;
-    overflow-x: hidden !important;
-    position: relative !important;
+    overflow: hidden !important; /* Ngăn chặn tuyệt đối các phần tử con tràn ra gây trượt ngang */
+}
+
+/* Đảm bảo khối dòng ngang st.columns không gây tràn lề */
+div[data-testid="stHorizontalBlock"] {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 
@@ -575,7 +589,8 @@ input[id^="xp-close-toggle-"]:checked ~ .xp-overlay {
     justify-content: center !important;
 }
 .xp-window {
-    width: 320px !important;
+    width: 300px !important;
+    max-width: 90% !important;
     background-color: #ece9d8 !important;
     border: 3px solid #0054e3 !important;
     border-radius: 7px 7px 0 0 !important;
