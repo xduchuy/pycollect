@@ -96,6 +96,14 @@ footer {
     display: none !important;
 }
 
+/* Ẩn hoàn toàn container của text input chuyển tab ẩn */
+div[data-testid="stTextInput"]:has(input[aria-label="active_tab_hidden"]) {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 /* Giới hạn kích thước container tối đa phù hợp Mobile */
 .block-container {
     max-width: 360px !important;
@@ -553,6 +561,10 @@ hr {
     cursor: pointer !important;
     width: 38px !important;
     height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    outline: none !important;
 }
 
 .m-dock-btn {
@@ -970,43 +982,109 @@ def display_media_results(cache):
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Vẽ thanh Navbar trên cùng (Neumorphic Dock 5 nút) ──
-active_tab = st.query_params.get("tab", "download")
+# Lấy hoặc khởi tạo tab từ query params
+query_tab = st.query_params.get("tab", "download")
+if "active_tab" not in st.session_state or st.session_state.get("last_query_tab") != query_tab:
+    st.session_state.active_tab = query_tab
+    st.session_state.last_query_tab = query_tab
+
+# Text input ẩn dùng để chuyển tab mượt mà qua WebSocket
+active_tab_hidden = st.text_input(
+    label="active_tab_hidden",
+    value=st.session_state.active_tab,
+    label_visibility="collapsed"
+)
+
+if active_tab_hidden != st.session_state.active_tab:
+    st.session_state.active_tab = active_tab_hidden
+    st.session_state.last_query_tab = active_tab_hidden
+    st.query_params["tab"] = active_tab_hidden
+    st.rerun()
+
+active_tab = st.session_state.active_tab
 
 st.markdown(f"""
 <div class="m-dock-container">
     <div class="m-dock">
-        <a href="/?tab=download" target="_self" class="m-dock-item {"active" if active_tab == "download" else ""}">
+        <button type="button" id="tab-btn-download" class="m-dock-item {"active" if active_tab == "download" else ""}">
             <div class="m-dock-btn">
                 <span class="m-dock-icon">📥</span>
             </div>
             <div class="m-active-dot"></div>
-        </a>
-        <a href="/?tab=history" target="_self" class="m-dock-item {"active" if active_tab == "history" else ""}">
+        </button>
+        <button type="button" id="tab-btn-history" class="m-dock-item {"active" if active_tab == "history" else ""}">
             <div class="m-dock-btn">
                 <span class="m-dock-icon">🕐</span>
             </div>
             <div class="m-active-dot"></div>
-        </a>
-        <a href="/?tab=gallery" target="_self" class="m-dock-item {"active" if active_tab == "gallery" else ""}">
+        </button>
+        <button type="button" id="tab-btn-gallery" class="m-dock-item {"active" if active_tab == "gallery" else ""}">
             <div class="m-dock-btn">
                 <span class="m-dock-icon">🖼️</span>
             </div>
             <div class="m-active-dot"></div>
-        </a>
-        <a href="/?tab=settings" target="_self" class="m-dock-item {"active" if active_tab == "settings" else ""}">
+        </button>
+        <button type="button" id="tab-btn-settings" class="m-dock-item {"active" if active_tab == "settings" else ""}">
             <div class="m-dock-btn">
                 <span class="m-dock-icon">⚙️</span>
             </div>
             <div class="m-active-dot"></div>
-        </a>
-        <a href="/?tab=help" target="_self" class="m-dock-item {"active" if active_tab == "help" else ""}">
+        </button>
+        <button type="button" id="tab-btn-help" class="m-dock-item {"active" if active_tab == "help" else ""}">
             <div class="m-dock-btn">
                 <span class="m-dock-icon">ℹ️</span>
             </div>
             <div class="m-active-dot"></div>
-        </a>
+        </button>
     </div>
 </div>
+
+<script>
+(function() {{
+    function switchTab(tabName) {{
+        let inputs = document.querySelectorAll('input[aria-label="active_tab_hidden"]');
+        if (inputs.length === 0 && window.parent) {{
+            try {{
+                inputs = window.parent.document.querySelectorAll('input[aria-label="active_tab_hidden"]');
+            }} catch(e) {{}}
+        }}
+        inputs.forEach(input => {{
+            try {{
+                let obj = input;
+                let desc = null;
+                while (obj) {{
+                    desc = Object.getOwnPropertyDescriptor(obj, "value");
+                    if (desc) break;
+                    obj = Object.getPrototypeOf(obj);
+                }}
+                if (desc && desc.set) {{
+                    desc.set.call(input, tabName);
+                }} else {{
+                    input.value = tabName;
+                }}
+                input.dispatchEvent(new Event('input', {{ bubbles: true }}));
+                input.dispatchEvent(new Event('change', {{ bubbles: true }}));
+                input.focus();
+                input.blur();
+            }} catch(e) {{
+                console.error("Error setting tab value", e);
+            }}
+        }});
+    }}
+    
+    setTimeout(function() {{
+        var tabs = ['download', 'history', 'gallery', 'settings', 'help'];
+        tabs.forEach(function(tab) {{
+            var btn = document.getElementById('tab-btn-' + tab);
+            if (btn) {{
+                btn.addEventListener('click', function() {{
+                    switchTab(tab);
+                }});
+            }}
+        }});
+    }}, 100);
+}})();
+</script>
 """, unsafe_allow_html=True)
 
 # ── Vẽ Khối Tiêu đề chính ──
@@ -1030,7 +1108,7 @@ if 'xp_error_msg' not in st.session_state:
     st.session_state.xp_error_msg = None
 
 # ── HÀNH TRÌNH CHUYỂN TAB (Early Exit) ──
-active_tab = st.query_params.get("tab", "download")
+active_tab = st.session_state.active_tab
 if active_tab != "download":
     if active_tab == "history":
         st.subheader("Lịch sử phân tích")
