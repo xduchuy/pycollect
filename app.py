@@ -219,18 +219,16 @@ div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.pa
     width: 100% !important;
 }
 
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"] {
+div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:first-child {
+    flex: 1 1 calc(100% - 66px) !important;
+    width: calc(100% - 66px) !important;
     min-width: 0 !important;
 }
 
-div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:first-child {
-    flex: 1 1 auto !important;
-    width: auto !important;
-}
-
 div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.paste-btn) > div[data-testid="column"]:last-child {
-    flex: 0 0 auto !important;
-    width: auto !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
 }
 
 /* Định dạng ô nhập liệu (QLineEdit) */
