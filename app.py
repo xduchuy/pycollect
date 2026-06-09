@@ -245,12 +245,16 @@ div[data-testid="stHorizontalBlock"]:has(div[data-testid="stTextInput"]):has(.pa
 }
 
 /* Định dạng ô nhập liệu (QLineEdit) */
+div[data-testid="stTextInput"] [data-baseweb="base-input"],
 div[data-testid="stTextInput"] [data-baseweb="input"] {
     border-radius: 14px !important;
     border: 1px solid #2a2a2a !important;
     background-color: #1a1a1a !important;
     height: 68px !important;
     transition: all 0.3s ease !important;
+}
+div[data-testid="stTextInput"] [data-baseweb="base-input"] {
+    border: none !important; /* Tránh viền lặp của base-input */
 }
 div[data-testid="stTextInput"] [data-baseweb="input"]:focus-within {
     border-color: #e8530a !important;
@@ -259,13 +263,27 @@ div[data-testid="stTextInput"] [data-baseweb="input"]:focus-within {
 div[data-testid="stTextInput"] input {
     background-color: transparent !important;
     color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important; /* Ép chữ màu trắng trên iOS */
     font-size: 18px !important;
     height: 100% !important;
     border: none !important;
     padding: 0 16px !important;
     outline: none !important;
     box-shadow: none !important;
+    caret-color: #ffffff !important; /* Con trỏ soạn thảo màu trắng */
 }
+
+/* Đè màu tự động điền (autofill) của Chrome/Safari trên di động */
+div[data-testid="stTextInput"] input:-webkit-autofill,
+div[data-testid="stTextInput"] input:-webkit-autofill:hover, 
+div[data-testid="stTextInput"] input:-webkit-autofill:focus, 
+div[data-testid="stTextInput"] input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 100px #1a1a1a inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    caret-color: #ffffff !important;
+}
+
 
 /* Tùy chỉnh công tắc Neumorphic Toggle (theo Tkinter Neumorphic) */
 div.stCheckbox, div[data-testid="stCheckbox"] {
