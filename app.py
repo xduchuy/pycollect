@@ -469,7 +469,7 @@ div[data-testid="stAlert"] {
 }
 
 /* Nút tải xuống lớn */
-div[data-testid="stDownloadButton"] button {
+div[data-testid="stDownloadButton"] button, .custom-dl-btn {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -483,13 +483,15 @@ div[data-testid="stDownloadButton"] button {
     font-size: 0.95rem !important;
     box-shadow: 0 4px 10px rgba(232, 83, 10, 0.3) !important;
     transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
-div[data-testid="stDownloadButton"] button:hover {
+div[data-testid="stDownloadButton"] button:hover, .custom-dl-btn:hover {
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 18px rgba(232, 83, 10, 0.5) !important;
     background: #f8631a !important;
 }
-div[data-testid="stDownloadButton"] button:active {
+div[data-testid="stDownloadButton"] button:active, .custom-dl-btn:active {
     transform: translateY(1px) !important;
 }
 
@@ -813,6 +815,76 @@ def render_info_card(label, value, right_label=""):
         </div>
         """, unsafe_allow_html=True)
 
+# ── Hàm vẽ nút Tải xuống hỗ trợ Web Share API trên Mobile ──
+def render_download_button(label, data_bytes, file_name, mime_type, key):
+    import base64
+    safe_file_name = file_name.replace('"', '\\"').replace("'", "\\'")
+    b64_str = base64.b64encode(data_bytes).decode('utf-8')
+    btn_id = f"btn-dl-{key}"
+    
+    html_code = f"""
+    <button type="button" id="{btn_id}" class="custom-dl-btn">
+        {label}
+    </button>
+    <script>
+    (function() {{
+        var btn = document.getElementById("{btn_id}");
+        if (!btn) return;
+        
+        btn.addEventListener('click', function() {{
+            var b64Data = "{b64_str}";
+            var filename = "{safe_file_name}";
+            var contentType = "{mime_type}";
+            
+            // Chuyển Base64 thành Blob
+            var sliceSize = 1024;
+            var byteCharacters = atob(b64Data);
+            var byteArrays = [];
+            
+            for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {{
+                var slice = byteCharacters.slice(offset, offset + sliceSize);
+                var byteNumbers = new Array(slice.length);
+                for (var i = 0; i < slice.length; i++) {{
+                    byteNumbers[i] = slice.charCodeAt(i);
+                }}
+                var byteArray = new Uint8Array(byteNumbers);
+                byteArrays.push(byteArray);
+            }}
+            var blob = new Blob(byteArrays, {{type: contentType}});
+            
+            // Kiểm tra môi trường di động để dùng Web Share API
+            var isMobile = /iPad|iPhone|iPod|Android/.test(navigator.userAgent) || 
+                           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            
+            if (isMobile && navigator.canShare && navigator.canShare({{ files: [new File([blob], filename, {{type: contentType}})] }})) {{
+                var file = new File([blob], filename, {{type: contentType}});
+                navigator.share({{
+                    files: [file],
+                    title: filename
+                }}).catch(function(err) {{
+                    console.log("Share failed, falling back to download:", err);
+                    triggerDownload(blob, filename);
+                }});
+            }} else {{
+                triggerDownload(blob, filename);
+            }}
+        }});
+        
+        function triggerDownload(blob, filename) {{
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }}
+    }})();
+    </script>
+    """
+    st.markdown(html_code, unsafe_allow_html=True)
+
 # ── Hàm hiển thị kết quả phương tiện ──
 def display_media_results(cache):
     if cache['type'] == 'instagram_album':
@@ -823,11 +895,11 @@ def display_media_results(cache):
             if not item['is_video']:
                 if item['bytes']:
                     st.image(item['bytes'])
-                    st.download_button(
+                    render_download_button(
                         label=f"📥 Tải Ảnh số {index + 1}",
-                        data=item['bytes'],
+                        data_bytes=item['bytes'],
                         file_name=item['filename'],
-                        mime="image/jpeg",
+                        mime_type="image/jpeg",
                         key=f"dl_cached_img_{index}"
                     )
                 else:
@@ -836,11 +908,11 @@ def display_media_results(cache):
             else:
                 st.video(item['url'])
                 if item['bytes']:
-                    st.download_button(
+                    render_download_button(
                         label=f"📥 Tải Video số {index + 1}",
-                        data=item['bytes'],
+                        data_bytes=item['bytes'],
                         file_name=item['filename'],
-                        mime="video/mp4",
+                        mime_type="video/mp4",
                         key=f"dl_cached_vid_{index}"
                     )
             st.markdown('</div>', unsafe_allow_html=True)
@@ -850,20 +922,22 @@ def display_media_results(cache):
         if cache['is_video']:
             st.video(cache['url'])
             if cache['bytes']:
-                st.download_button(
+                render_download_button(
                     label="📥 Tải Reels/Video này",
-                    data=cache['bytes'],
+                    data_bytes=cache['bytes'],
                     file_name=cache['filename'],
-                    mime="video/mp4"
+                    mime_type="video/mp4",
+                    key="dl_single_vid"
                 )
         else:
             if cache['bytes']:
                 st.image(cache['bytes'])
-                st.download_button(
+                render_download_button(
                     label="📥 Tải Ảnh về máy",
-                    data=cache['bytes'],
+                    data_bytes=cache['bytes'],
                     file_name=cache['filename'],
-                    mime="image/jpeg"
+                    mime_type="image/jpeg",
+                    key="dl_single_img"
                 )
             else:
                 st.warning("⚠️ Không thể xem trước ảnh trực tiếp.")
@@ -876,20 +950,22 @@ def display_media_results(cache):
         if cache['download_type'] == 'audio':
             st.audio(cache['bytes'], format="audio/m4a")
             st.write("")
-            st.download_button(
+            render_download_button(
                 label="📥 Tải file âm thanh (M4A)",
-                data=cache['bytes'],
+                data_bytes=cache['bytes'],
                 file_name=f"{cache['title']}.m4a",
-                mime="audio/m4a"
+                mime_type="audio/m4a",
+                key="dl_ytdlp_audio"
             )
         else:
             st.video(cache['bytes'])
             st.write("")
-            st.download_button(
+            render_download_button(
                 label="📥 Tải file video (MP4)",
-                data=cache['bytes'],
+                data_bytes=cache['bytes'],
                 file_name=f"{cache['title']}.mp4",
-                mime="video/mp4"
+                mime_type="video/mp4",
+                key="dl_ytdlp_video"
             )
         st.markdown('</div>', unsafe_allow_html=True)
 
