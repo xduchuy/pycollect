@@ -908,7 +908,7 @@ if 'xp_error_msg' not in st.session_state:
 url = st.text_input(
     label="URL Input",
     value=st.session_state.get("url_value", ""),
-    placeholder="Paste Instagram, Facebook, or TikTok link…",
+    placeholder="",
     label_visibility="collapsed"
 )
 
