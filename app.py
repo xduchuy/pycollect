@@ -1021,7 +1021,7 @@ with col_paste:
             });
         }).catch(err => {
             if (isIOS) {
-                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này khi chạy qua khung Streamlit. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
+                alert("Trên iPhone (Safari), Apple chặn quyền tự động dán từ nút này khi chạy qua ứng dụng PyCollect. Bạn vui lòng chạm/đè giữ vào ô nhập liệu rồi chọn 'Dán' (Paste) để nhập link nhé!");
             } else {
                 alert("Không thể đọc clipboard. Hãy chắc chắn bạn đã sao chép link và cho phép trang web truy cập clipboard (nút ổ khóa cạnh URL trình duyệt -> cho phép Clipboard).");
             }
