@@ -80,7 +80,7 @@ st.markdown("""
 
 /* Áp dụng font và màu nền tối đặc trưng của PyCollect */
 html, body, [class*="css"], .stApp, .stMarkdown, p, span, label, input, button {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-family: 'Press Start 2P', monospace !important;
 }
 
 html, body, [data-testid="stAppViewContainer"], [data-testid="stAppViewBlockContainer"], .stApp {
@@ -215,7 +215,7 @@ div[data-testid="stTextInput"] input {
     background-color: transparent !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important; /* Ép chữ màu trắng trên iOS */
-    font-size: 18px !important;
+    font-size: 11px !important;
     height: 100% !important;
     border: none !important;
     padding: 0 16px !important;
@@ -443,7 +443,7 @@ div[data-testid="stToggle"]:has(input:checked) [role="checkbox"] > div {
 }
 .m-card-title {
     color: #ffffff !important;
-    font-size: 14px !important;
+    font-size: 10px !important;
     font-weight: 600 !important;
     letter-spacing: 0.5px !important;
 }
@@ -484,11 +484,11 @@ div[data-testid="stDownloadButton"] button, .custom-dl-btn {
     padding: 12px 24px !important;
     border-radius: 10px !important;
     font-weight: 700 !important;
-    font-size: 0.95rem !important;
+    font-size: 11px !important;
     box-shadow: 0 4px 10px rgba(232, 83, 10, 0.3) !important;
     transition: all 0.3s ease !important;
     cursor: pointer !important;
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    font-family: 'Press Start 2P', monospace !important;
 }
 div[data-testid="stDownloadButton"] button:hover, .custom-dl-btn:hover {
     transform: translateY(-2px) !important;
