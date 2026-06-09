@@ -1054,6 +1054,7 @@ def download_with_ytdlp(video_url, download_type="video"):
             'format': 'm4a/bestaudio/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
             'restrictfilenames': True,
+            'nocachefiles': True,
             'extractor_args': {
                 'youtube': {
                     'player_client': ['default', '-android_sdkless']
@@ -1063,9 +1064,10 @@ def download_with_ytdlp(video_url, download_type="video"):
         }
     else:
         ydl_opts = {
-            'format': 'best[[ext=mp4]]/best',
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
             'outtmpl': 'downloads/%(title)s.%(ext)s',
             'restrictfilenames': True,
+            'nocachefiles': True,
             'extractor_args': {
                 'youtube': {
                     'player_client': ['default', '-android_sdkless']
