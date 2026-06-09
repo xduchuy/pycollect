@@ -116,7 +116,7 @@ footer {
 
 /* Giới hạn kích thước container tối đa phù hợp Mobile và chặn trượt ngang tuyệt đối */
 .block-container {
-    max-width: 360px !important;
+    max-width: 400px !important;
     width: 100% !important;
     padding-top: 1.5rem !important;
     padding-bottom: 2rem !important;
@@ -169,7 +169,7 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
 .m-title {
     font-family: 'Press Start 2P', monospace !important;
     color: #ffffff !important;
-    font-size: 24px !important;
+    font-size: 26px !important;
     font-weight: 400 !important;
     letter-spacing: -1px !important;
     margin: 0 !important;
@@ -188,7 +188,7 @@ div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
 }
 .m-subtitle {
     color: #e8530a !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     font-weight: 700 !important;
     letter-spacing: 2px !important;
     font-family: 'JetBrains Mono', monospace !important;
@@ -215,7 +215,7 @@ div[data-testid="stTextInput"] input {
     background-color: transparent !important;
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important; /* Ép chữ màu trắng trên iOS */
-    font-size: 11px !important;
+    font-size: 12px !important;
     height: 100% !important;
     border: none !important;
     padding: 0 16px !important;
@@ -406,7 +406,7 @@ div[data-testid="stToggle"]:has(input:checked) [role="checkbox"] > div {
 
 .m-swipe-lbl {
     color: #52525b !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     letter-spacing: 2.5px !important;
     font-family: 'JetBrains Mono', monospace !important;
 }
@@ -443,13 +443,13 @@ div[data-testid="stToggle"]:has(input:checked) [role="checkbox"] > div {
 }
 .m-card-title {
     color: #ffffff !important;
-    font-size: 10px !important;
+    font-size: 11px !important;
     font-weight: 600 !important;
     letter-spacing: 0.5px !important;
 }
 .m-card-right {
     color: #888888 !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-family: 'JetBrains Mono', monospace !important;
 }
 
@@ -484,7 +484,7 @@ div[data-testid="stDownloadButton"] button, .custom-dl-btn {
     padding: 12px 24px !important;
     border-radius: 10px !important;
     font-weight: 700 !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     box-shadow: 0 4px 10px rgba(232, 83, 10, 0.3) !important;
     transition: all 0.3s ease !important;
     cursor: pointer !important;
